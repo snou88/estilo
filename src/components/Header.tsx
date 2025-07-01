@@ -25,7 +25,7 @@ const Header = () => {
             <img 
               src="/estilo.svg" 
               alt="Estilo" 
-              className="h-8 w-auto filter brightness-0"
+              className="h-8 w-auto"
             />
           </Link>
 

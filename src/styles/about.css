@@ -1,0 +1,138 @@
+.hero-section {
+  position: relative;
+}
+
+.hero-text {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.hero-section.active .hero-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-image {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-section.active .hero-image {
+  transform: translateY(-50px);
+}
+
+.quality-section {
+  position: relative;
+}
+
+.quality-content {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.quality-image {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.quality-section.active .quality-content,
+.quality-section.active .quality-image {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.parallax-bg {
+  transition: transform 0.5s ease-out;
+}
+
+.parallax-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-section.active .parallax-bg {
+  transform: translateY(-100px);
+}
+
+.value-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.values-section.active .value-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Effet de zoom */
+.hero-image {
+  transform-origin: center;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-image.active {
+  transform: scale(1.05);
+}
+
+/* Effet de flottement */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Effet de rotation */
+.animate-rotate {
+  animation: rotate 8s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Effet de dégradé */
+.gradient-text {
+  background: linear-gradient(45deg, #4f46e5, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+/* Effet de parallaxe */
+.parallax {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/images/parallax-bg.jpg') center/cover;
+  opacity: 0.1;
+  transform: scale(1.1);
+  transition: transform 0.5s ease-out;
+}
+
+.parallax:hover::before {
+  transform: scale(1.2);
+}

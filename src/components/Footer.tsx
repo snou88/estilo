@@ -13,7 +13,7 @@ const Footer = () => {
               <img 
                 src="/estilo.svg" 
                 alt="Estilo" 
-                className="h-8 w-auto filter brightness-0"
+                className="h-8 w-auto"
               />
             </Link>
             <p className="text-gray-600 text-sm mb-4 max-w-md">
