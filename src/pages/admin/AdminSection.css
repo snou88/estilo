@@ -1,0 +1,19 @@
+.admin-section-bg {
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.admin-section-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 36px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  text-align: center;
+}
+.admin-section-placeholder {
+  color: #bbb;
+  margin-top: 40px;
+  font-size: 1.2rem;
+}

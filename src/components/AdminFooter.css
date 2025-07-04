@@ -1,0 +1,30 @@
+.admin-footer {
+  background: #23272f;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  border-top: 3px solid #4e73df;
+  margin-top: 48px;
+}
+.admin-footer-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.admin-footer-links {
+  display: flex;
+  gap: 24px;
+}
+.admin-footer-link {
+  color: #b8c1d1;
+  text-decoration: none;
+  font-size: 0.97rem;
+  transition: color 0.15s;
+}
+.admin-footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}

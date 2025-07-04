@@ -1,0 +1,51 @@
+.admin-header-bar {
+  width: 100%;
+  height: 64px;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(60,72,100,0.08);
+  display: flex;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 101;
+  padding-left: 220px; /* espace sidebar */
+}
+.admin-header-bar-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 32px;
+}
+.admin-header-logo img {
+  height: 36px;
+  width: auto;
+}
+.admin-header-user {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.admin-header-username {
+  font-weight: 600;
+  color: #222;
+  font-size: 1.08rem;
+}
+.admin-header-logout-btn {
+  background: #f8fafc;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 11px;
+  cursor: pointer;
+  color: #2563eb;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+}
+.admin-header-logout-btn:hover {
+  background: #e6eeff;
+}
