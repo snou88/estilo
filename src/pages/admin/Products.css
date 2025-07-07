@@ -1,0 +1,23 @@
+/* Styles pour la page Statistics */
+.container {
+    padding: 20px;
+}
+
+.stats-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stats-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.stats-label {
+    color: #666;
+    font-size: 14px;
+}

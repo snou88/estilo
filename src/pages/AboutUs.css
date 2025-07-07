@@ -1,0 +1,202 @@
+/* Styles spécifiques à la page AboutUs */
+
+.about-page {
+    min-height: 100vh;
+    background: var(--bg-gray);
+}
+
+/* Section Héros */
+.hero-section {
+    padding: 4rem 2rem;
+    background: var(--primary-white);
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.hero-subtitle {
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+}
+
+/* Section Qualité */
+.quality-section {
+    padding: 4rem 2rem;
+    background: var(--bg-gray);
+}
+
+.quality-grid {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .quality-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.quality-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.quality-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.quality-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-black);
+    color: var(--primary-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.quality-text {
+    flex: 1;
+}
+
+.quality-title {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.quality-description {
+    color: var(--text-gray);
+}
+
+/* Section Valeurs */
+.values-section {
+    padding: 4rem 2rem;
+    background: var(--primary-white);
+}
+
+.values-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 768px) {
+    .values-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.value-card {
+    background: var(--primary-white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--hover-shadow);
+}
+
+.value-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-black);
+    color: var(--primary-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.value-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.value-description {
+    color: var(--text-gray);
+}
+
+/* Section Équipe */
+.team-section {
+    padding: 4rem 2rem;
+    background: var(--bg-gray);
+}
+
+.team-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 768px) {
+    .team-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.team-card {
+    background: var(--primary-white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--hover-shadow);
+}
+
+.team-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.team-image:hover {
+    transform: scale(1.05);
+}
+
+.team-content {
+    padding: 1.5rem;
+}
+
+.team-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.team-role {
+    color: var(--text-gray);
+    margin-bottom: 0.5rem;
+}
+
+.team-description {
+    color: var(--text-gray);
+}

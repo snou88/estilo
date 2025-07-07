@@ -1,0 +1,149 @@
+/* Styles spécifiques à la page Contact */
+
+.contact-page {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: var(--bg-gray);
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.contact-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.contact-header p {
+    color: var(--text-gray);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.contact-grid {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .contact-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.contact-card {
+    background: var(--primary-white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--hover-shadow);
+}
+
+/* Formulaire de contact */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--text-gray);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-black);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+}
+
+/* Boutons */
+.submit-btn {
+    @apply btn-primary w-full;
+}
+
+/* Informations de contact */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-info-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.contact-info-icon {
+    color: var(--primary-black);
+    font-size: 1.5rem;
+}
+
+.contact-info-content {
+    flex: 1;
+}
+
+.contact-info-title {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.contact-info-text {
+    color: var(--text-gray);
+}
+
+/* Réseaux sociaux */
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-white);
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    transform: scale(1.1);
+    background: var(--accent-red);
+}
