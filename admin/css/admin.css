@@ -1,0 +1,64 @@
+/* Style pour le bouton de déconnexion */
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}
+
+/* Style pour le popup de confirmation */
+.confirm-logout {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.confirm-logout.show {
+    display: block;
+}
+
+.confirm-logout .buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.confirm-logout button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.confirm-logout .btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.confirm-logout .btn-confirm {
+    background-color: #dc3545;
+    color: white;
+}
+
+.confirm-logout .btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+.confirm-logout .btn-confirm:hover {
+    background-color: #c82333;
+}

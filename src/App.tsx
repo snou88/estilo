@@ -1,5 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+// Configuration de React Router
+const routerConfig = {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+};
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -18,7 +27,7 @@ import AdminSettings from './pages/admin/Settings';
 
 function App() {
   return (
-    <Router>
+    <Router {...routerConfig}>
       <Routes>
         {/* Public pages avec Header/Footer */}
         <Route
@@ -33,6 +42,7 @@ function App() {
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/admin" element={<AdminLogin />} />
                 </Routes>
               </main>
               <Footer />
@@ -40,7 +50,6 @@ function App() {
           }
         />
         {/* Pages admin sans Header/Footer public */}
-        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/contact" element={<AdminContact />} />
