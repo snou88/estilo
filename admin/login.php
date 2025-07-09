@@ -1,11 +1,19 @@
 <?php
 require_once 'session_manager.php';
 
-// Configuration des headers
-header('Access-Control-Allow-Origin: *');
+// Configuration des headers CORS
+header('Access-Control-Allow-Origin: http://localhost:5173');
+header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Max-Age: 3600');
 header('Access-Control-Expose-Headers: Content-Type, Authorization');
+
+// Gérer la requête OPTIONS (prévolée)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('Access-Control-Max-Age: 3600');
+    exit(0);
+}
 
 // Gérer la requête OPTIONS (prévolée)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -46,6 +54,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$email]);
             $admin = $stmt->fetch();
             
+            if (!$admin) {
+                // Email non trouvé
+                jsonResponse(['success' => false, 'error' => 'Email incorrect']);
+            }
+            
+            if (!password_verify($password, $admin['password'])) {
+                // Mot de passe incorrect
+                jsonResponse(['success' => false, 'error' => 'Mot de passe incorrect']);
+            }
+            
             if ($admin && password_verify($password, $admin['password'])) {
                 // Connexion réussie
                 $_SESSION['admin_id'] = $admin['id'];
@@ -59,9 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Email ou mot de passe incorrect';
             }
         } catch (PDOException $e) {
-            // Log de l'erreur
-            error_log("Erreur de connexion: " . $e->getMessage());
-            $error = 'Une erreur est survenue';
+            // Afficher l'erreur PDO directement
+            jsonResponse(['success' => false, 'error' => 'Erreur PDO: ' . $e->getMessage()]);
+            error_log("Erreur PDO: " . $e->getMessage());
         }
     }
 }

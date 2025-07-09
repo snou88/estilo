@@ -22,10 +22,11 @@ const Login = () => {
       formData.append('email', email);
       formData.append('password', password);
 
-      // Envoyer la requête POST
+      // Envoyer la requête POST vers le backend PHP via le proxy
       const response = await fetch('/admin/login.php', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
 
       // Redirection vers le dashboard si succès
