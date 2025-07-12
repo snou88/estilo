@@ -5,7 +5,7 @@ session_start();
 // Configuration de la session
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', true);
+ini_set('session.cookie_secure', false); // Désactivé en local
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.gc_maxlifetime', 1800); // 30 minutes
 
@@ -19,8 +19,8 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 // Mettre à jour l'activité
 $_SESSION['last_activity'] = time();
 
-// Vérifier l'origine de la requête
-if (isset($_SERVER['HTTP_REFERER'])) {
+// Vérifier l'origine de la requête uniquement en production
+if (isset($_SERVER['HTTP_REFERER']) && !in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     $referer = parse_url($_SERVER['HTTP_REFERER']);
     if ($referer['host'] !== $_SERVER['HTTP_HOST']) {
         header('Location: login.php');

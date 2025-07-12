@@ -1,6 +1,4 @@
 <?php
-require_once 'session_manager.php';
-
 // Configuration des headers CORS
 header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Credentials: true');
@@ -15,11 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// Gérer la requête OPTIONS (prévolée)
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header('Access-Control-Max-Age: 3600');
-    exit(0);
-}
+// Démarrer la session
+session_start();
 
 // Configuration de la base de données
 require_once '../config/db_config.php';
@@ -39,48 +34,44 @@ if (isset($_SESSION['admin_id'])) {
 
 // Gérer la soumission du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitization des données
-    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
-    $password = $_POST['password'] ?? '';
-    $redirect = filter_var($_POST['redirect'] ?? 'dashboard.php', FILTER_SANITIZE_URL);
-    
-    // Validation des données
-    if (empty($email) || empty($password)) {
-        $error = 'Veuillez remplir tous les champs';
-    } else {
-        try {
-            // Préparation et exécution de la requête
-            $stmt = $pdo->prepare("SELECT id, email, full_name, password FROM admins WHERE email = ?");
-            $stmt->execute([$email]);
-            $admin = $stmt->fetch();
-            
-            if (!$admin) {
-                // Email non trouvé
-                jsonResponse(['success' => false, 'error' => 'Email incorrect']);
-            }
-            
-            if (!password_verify($password, $admin['password'])) {
-                // Mot de passe incorrect
-                jsonResponse(['success' => false, 'error' => 'Mot de passe incorrect']);
-            }
-            
-            if ($admin && password_verify($password, $admin['password'])) {
-                // Connexion réussie
-                $_SESSION['admin_id'] = $admin['id'];
-                $_SESSION['admin_name'] = $admin['full_name'];
-                $_SESSION['admin_email'] = $admin['email'];
-                
-                // Redirection vers la page demandée
-                header('Location: ' . $redirect);
-                exit;
-            } else {
-                $error = 'Email ou mot de passe incorrect';
-            }
-        } catch (PDOException $e) {
-            // Afficher l'erreur PDO directement
-            jsonResponse(['success' => false, 'error' => 'Erreur PDO: ' . $e->getMessage()]);
-            error_log("Erreur PDO: " . $e->getMessage());
+    try {
+        // Sanitization des données
+        $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'] ?? '';
+        $redirect = filter_var($_POST['redirect'] ?? 'dashboard.php', FILTER_SANITIZE_URL);
+        
+        // Validation des données
+        if (empty($email) || empty($password)) {
+            jsonResponse(['success' => false, 'error' => 'Veuillez remplir tous les champs']);
         }
+
+        // Préparation et exécution de la requête
+        $stmt = $pdo->prepare("SELECT id, email, full_name, password FROM admins WHERE email = ?");
+        $stmt->execute([$email]);
+        $admin = $stmt->fetch();
+        
+        if (!$admin) {
+            // Email non trouvé
+            jsonResponse(['success' => false, 'error' => 'Email incorrect']);
+        }
+        
+        if (!password_verify($password, $admin['password'])) {
+            // Mot de passe incorrect
+            jsonResponse(['success' => false, 'error' => 'Mot de passe incorrect']);
+        }
+        
+        // Connexion réussie
+        $_SESSION['admin_id'] = $admin['id'];
+        $_SESSION['admin_name'] = $admin['full_name'];
+        $_SESSION['admin_email'] = $admin['email'];
+        
+        // Redirection vers la page demandée
+        header('Location: ' . $redirect);
+        exit;
+    } catch (PDOException $e) {
+        // Log l'erreur
+        error_log("Erreur PDO: " . $e->getMessage());
+        jsonResponse(['success' => false, 'error' => 'Une erreur est survenue. Veuillez réessayer.']);
     }
 }
 ?>

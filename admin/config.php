@@ -6,41 +6,38 @@ $admin_config = [
     'lockout_duration' => 300, // 5 minutes
     'password_min_length' => 8,
     'password_max_length' => 255,
+    // Configuration pour le développement local
     'allowed_ip_ranges' => [
-        // Permettre toutes les IP pour l'instant
-        '0.0.0.0/0'
+        '127.0.0.1',    // localhost IPv4
+        '::1'          // localhost IPv6
     ],
     'allowed_user_agents' => [
-        // Permettre tous les navigateurs pour l'instant
-        '.*'
+        'Mozilla/5.0'  // Permettre tous les navigateurs modernes
     ]
 ];
 
 // Fonction pour vérifier l'IP
 function checkIP($ip) {
     global $admin_config;
-    foreach ($admin_config['allowed_ip_ranges'] as $range) {
-        if (preg_match('/^' . str_replace('/', '\/', $range) . '$/', $ip)) {
-            return true;
-        }
-    }
-    return false;
+    return in_array($ip, $admin_config['allowed_ip_ranges']);
 }
 
 // Fonction pour vérifier l'User-Agent
 function checkUserAgent($user_agent) {
     global $admin_config;
     foreach ($admin_config['allowed_user_agents'] as $pattern) {
-        if (preg_match('/' . $pattern . '/', $user_agent)) {
+        if (stripos($user_agent, $pattern) !== false) {
             return true;
         }
     }
     return false;
 }
 
-// Vérifier l'IP et l'User-Agent
-if (!checkIP($_SERVER['REMOTE_ADDR']) || !checkUserAgent($_SERVER['HTTP_USER_AGENT'])) {
-    header('HTTP/1.0 403 Forbidden');
-    die('Accès non autorisé');
+// Vérifier l'IP et l'User-Agent uniquement en production
+if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
+    if (!checkIP($_SERVER['REMOTE_ADDR']) || !checkUserAgent($_SERVER['HTTP_USER_AGENT'])) {
+        header('HTTP/1.0 403 Forbidden');
+        die('Accès non autorisé');
+    }
 }
 ?>
