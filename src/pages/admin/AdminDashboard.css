@@ -41,26 +41,21 @@
 }
 
 .dashboard-circle {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   box-shadow: 0 2px 8px 0 rgba(60,72,100,0.07);
   cursor: pointer;
   transition: transform 0.13s, box-shadow 0.13s;
   margin-bottom: 18px;
-}
-
-.dashboard-circle-large {
-  font-size: 1.25rem;
-  width: 160px;
-  height: 160px;
+  text-align: center;
 }
 
 .dashboard-circle:hover {
@@ -69,9 +64,49 @@
 }
 
 .dashboard-icon {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .dashboard-label {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dashboard-count {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-processing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-shipped {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-delivered {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
 }

@@ -2,78 +2,484 @@ import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
-import './AdminSection.css';
+import { Edit, Trash, Plus, Search, Filter } from 'lucide-react';
 import './ProductsAdmin.css';
-import model from '../../assets/images/products/model.png';
-import { Edit, Trash } from 'lucide-react';
+import '../AdminLayout.css';
 
-// Données mock pour démo
-const MOCK_PRODUCTS = [
-  { id: 1, name: 'T-shirt Estilo', category: 'Vêtements', price: 19.99, image: model },
-  { id: 2, name: 'Sweat Capuche', category: 'Vêtements', price: 39.99, image: model },
-  { id: 3, name: 'Jean Slim', category: 'Vêtements', price: 49.99, image: model },
-  { id: 4, name: 'Casquette Logo', category: 'Accessoires', price: 14.99, image: model },
-  { id: 5, name: 'Sac à dos', category: 'Accessoires', price: 29.99, image: model },
-  { id: 6, name: 'Chaussettes', category: 'Vêtements', price: 7.99, image: model },
-  { id: 7, name: 'Veste Denim', category: 'Vêtements', price: 59.99, image: model },
-  { id: 8, name: 'Short été', category: 'Vêtements', price: 22.99, image: model },
-  { id: 9, name: 'Chemise blanche', category: 'Vêtements', price: 27.99, image: model },
-  { id: 10, name: 'Bonnet hiver', category: 'Accessoires', price: 11.99, image: model },
-  { id: 11, name: 'Polo classique', category: 'Vêtements', price: 24.99, image: model },
-  { id: 12, name: 'Ceinture cuir', category: 'Accessoires', price: 17.99, image: model },
-];
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category_name: string;
+  image_url: string;
+  stock_quantity: number;
+  is_active: boolean;
+  created_at: string;
+}
 
-const ITEMS_PER_PAGE = 6;
+interface Category {
+  id: number;
+  name: string;
+}
 
 const Products = () => {
-  const [filter, setFilter] = useState('');
-  const [page, setPage] = useState(1);
-  const [animate, setAnimate] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category_id: '',
+    image_url: '',
+    stock_quantity: '',
+    sizes: '',
+    colors: ''
+  });
 
   useEffect(() => {
-    setAnimate(true);
-    return () => setAnimate(false);
+    fetchProducts();
+    fetchCategories();
   }, []);
 
-  // Actions modale
-  const handleDelete = (prod: any) => {
-    setSelectedProduct(prod);
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/backend/api/admin/products.php');
+      const data = await response.json();
+      setProducts(data.products || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des produits:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/backend/api/admin/categories.php');
+      const data = await response.json();
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des catégories:', error);
+    }
+  };
+
+  const handleAddProduct = () => {
+    setFormData({
+      name: '',
+      description: '',
+      price: '',
+      category_id: '',
+      image_url: '',
+      stock_quantity: '',
+      sizes: '',
+      colors: ''
+    });
+    setIsEditing(false);
+    setShowProductModal(true);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setFormData({
+      name: product.name,
+      description: product.description,
+      price: product.price.toString(),
+      category_id: '', // À récupérer depuis l'API
+      image_url: product.image_url,
+      stock_quantity: product.stock_quantity.toString(),
+      sizes: '',
+      colors: ''
+    });
+    setSelectedProduct(product);
+    setIsEditing(true);
+    setShowProductModal(true);
+  };
+
+  const handleDeleteProduct = (product: Product) => {
+    setSelectedProduct(product);
     setShowDeleteModal(true);
   };
-  const handleEdit = (prod: any) => {
-    setSelectedProduct(prod);
-    setShowEditModal(true);
-  };
-  const confirmDelete = () => {
-    // Ici, supprimer le produit (API ou setState)
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-    // Optionnel : afficher une notification
-  };
-  const confirmEdit = () => {
-    // Ici, ouvrir un vrai formulaire d’édition ou valider la modif
-    setShowEditModal(false);
-    setSelectedProduct(null);
-    // Optionnel : afficher une notification
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`/backend/api/admin/products.php?id=${selectedProduct.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        fetchProducts();
+        setShowDeleteModal(false);
+        setSelectedProduct(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    }
   };
 
-  // Filtrage
-  const filtered = MOCK_PRODUCTS.filter(p =>
-    p.name.toLowerCase().includes(filter.toLowerCase())
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const method = isEditing ? 'PUT' : 'POST';
+      const url = isEditing 
+        ? `/backend/api/admin/products.php?id=${selectedProduct.id}`
+        : '/backend/api/admin/products.php';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        fetchProducts();
+        setShowProductModal(false);
+        setSelectedProduct(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
+  };
+
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === '' || product.category_name === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-layout">
+        <AdminSidebar />
+        <div className="admin-main">
+          <AdminHeader />
+          <main className="admin-content">
+            <div style={{ textAlign: 'center', padding: '60px' }}>Chargement...</div>
+          </main>
+          <AdminFooter />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="admin-layout">
+      <AdminSidebar />
+      <div className="admin-main">
+        <AdminHeader />
+        <main className="admin-content">
+          <div className="admin-page-header">
+            <h1 className="admin-page-title">Gestion des Produits</h1>
+            <button className="admin-btn" onClick={handleAddProduct}>
+              <Plus size={16} style={{ marginRight: '8px' }} />
+              Ajouter un Produit
+            </button>
+          </div>
+
+          {/* Filtres */}
+          <div className="admin-card">
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
+                <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                <input
+                  type="text"
+                  placeholder="Rechercher un produit..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="admin-form-input"
+                  style={{ paddingLeft: '44px' }}
+                />
+              </div>
+              <div style={{ minWidth: '150px' }}>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="admin-form-select"
+                >
+                  <option value="">Toutes les catégories</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Liste des produits */}
+          <div className="admin-card">
+            {filteredProducts.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px', color: '#6b7280' }}>
+                Aucun produit trouvé
+              </div>
+            ) : (
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map(product => (
+                    <tr key={product.id}>
+                      <td>
+                        <img 
+                          src={product.image_url} 
+                          alt={product.name}
+                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }}
+                        />
+                      </td>
+                      <td style={{ fontWeight: '600' }}>{product.name}</td>
+                      <td>{product.category_name}</td>
+                      <td style={{ fontWeight: '600', color: '#3b82f6' }}>{product.price}€</td>
+                      <td>
+                        <span style={{ 
+                          color: product.stock_quantity > 10 ? '#10b981' : product.stock_quantity > 0 ? '#f59e0b' : '#ef4444',
+                          fontWeight: '600'
+                        }}>
+                          {product.stock_quantity}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${product.is_active ? 'status-delivered' : 'status-cancelled'}`}>
+                          {product.is_active ? 'Actif' : 'Inactif'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            onClick={() => handleEditProduct(product)}
+                            style={{ 
+                              background: 'none', 
+                              border: 'none', 
+                              cursor: 'pointer',
+                              padding: '8px',
+                              borderRadius: '4px',
+                              color: '#3b82f6'
+                            }}
+                            title="Modifier"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product)}
+                            style={{ 
+                              background: 'none', 
+                              border: 'none', 
+                              cursor: 'pointer',
+                              padding: '8px',
+                              borderRadius: '4px',
+                              color: '#ef4444'
+                            }}
+                            title="Supprimer"
+                          >
+                            <Trash size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Modal Produit */}
+          {showProductModal && (
+            <div className="admin-modal">
+              <div className="admin-modal-content">
+                <div className="admin-modal-header">
+                  <h2 className="admin-modal-title">
+                    {isEditing ? 'Modifier le Produit' : 'Ajouter un Produit'}
+                  </h2>
+                  <button 
+                    className="admin-close-btn"
+                    onClick={() => setShowProductModal(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="admin-form">
+                  <div className="admin-form-group">
+                    <label className="admin-form-label">Nom du produit</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="admin-form-input"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="admin-form-group">
+                    <label className="admin-form-label">Description</label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      className="admin-form-textarea"
+                      rows={4}
+                      required
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="admin-form-group">
+                      <label className="admin-form-label">Prix (€)</label>
+                      <input
+                        type="number"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        className="admin-form-input"
+                        step="0.01"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="admin-form-group">
+                      <label className="admin-form-label">Stock</label>
+                      <input
+                        type="number"
+                        name="stock_quantity"
+                        value={formData.stock_quantity}
+                        onChange={handleInputChange}
+                        className="admin-form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="admin-form-group">
+                    <label className="admin-form-label">Catégorie</label>
+                    <select
+                      name="category_id"
+                      value={formData.category_id}
+                      onChange={handleInputChange}
+                      className="admin-form-select"
+                      required
+                    >
+                      <option value="">Sélectionner une catégorie</option>
+                      {categories.map(category => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="admin-form-group">
+                    <label className="admin-form-label">URL de l'image</label>
+                    <input
+                      type="url"
+                      name="image_url"
+                      value={formData.image_url}
+                      onChange={handleInputChange}
+                      className="admin-form-input"
+                      required
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '24px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowProductModal(false)}
+                      style={{
+                        background: '#6b7280',
+                        color: 'white',
+                        border: 'none',
+                        padding: '12px 24px',
+                        borderRadius: '8px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Annuler
+                    </button>
+                    <button type="submit" className="admin-btn">
+                      {isEditing ? 'Modifier' : 'Ajouter'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Modal de confirmation suppression */}
+          {showDeleteModal && (
+            <div className="admin-modal">
+              <div className="admin-modal-content">
+                <div className="admin-modal-header">
+                  <h2 className="admin-modal-title">Confirmer la suppression</h2>
+                  <button 
+                    className="admin-close-btn"
+                    onClick={() => setShowDeleteModal(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <p style={{ marginBottom: '24px', color: '#6b7280' }}>
+                  Êtes-vous sûr de vouloir supprimer le produit "{selectedProduct?.name}" ?
+                  Cette action est irréversible.
+                </p>
+                
+                <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    style={{
+                      background: '#6b7280',
+                      color: 'white',
+                      border: 'none',
+                      padding: '12px 24px',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Annuler
+                  </button>
+                  <button 
+                    onClick={confirmDelete}
+                    className="admin-btn admin-btn-danger"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+        <AdminFooter />
+      </div>
+    </div>
   );
-  // Pagination
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const products = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+};
 
-  const handlePage = (n: number) => {
-    setAnimate(false);
-    setTimeout(() => {
-      setPage(n);
-      setAnimate(true);
-    }, 120);
+export default Products;
   };
 
   return (
