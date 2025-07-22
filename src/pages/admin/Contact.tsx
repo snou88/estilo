@@ -1,23 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
-import './AdminSection.css';
+import { Trash, Mail } from 'lucide-react';
 
-// Define the type for a contact message (adjust fields as needed)
+// Type pour un message de contact
 type ContactMessage = {
   id: number;
   name: string;
   email: string;
   message: string;
   created_at: string;
+  read: boolean; // Added read status
 };
 
 const Contact = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [animate, setAnimate] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [showReplyModal, setShowReplyModal] = useState(false);
+  const [replyContent, setReplyContent] = useState('');
+  const [replyingTo, setReplyingTo] = useState<ContactMessage | null>(null);
+  const [sendingReply, setSendingReply] = useState(false);
+  const [replySuccess, setReplySuccess] = useState('');
+  const [replyError, setReplyError] = useState('');
 
   useEffect(() => {
+    setAnimate(true);
     const fetchMessages = async () => {
       setLoading(true);
       setError('');
@@ -41,47 +53,186 @@ const Contact = () => {
       }
     };
     fetchMessages();
+    return () => setAnimate(false);
   }, []);
 
+  // Handler suppression
+  const handleDelete = (msg: ContactMessage) => {
+    setSelectedMessage(msg);
+    setShowDeleteModal(true);
+  };
+  const confirmDelete = async () => {
+    if (!selectedMessage) return;
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch('http://localhost/estilo/admin/delete_contact_message.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token || ''
+        },
+        body: JSON.stringify({ id: selectedMessage.id })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessages(messages.filter(m => m.id !== selectedMessage.id));
+        setShowDeleteModal(false);
+        setSelectedMessage(null);
+      } else {
+        setError(data.error || 'Erreur lors de la suppression');
+      }
+    } catch (e) {
+      setError('Erreur réseau ou serveur');
+    }
+    setLoading(false);
+  };
+
+  // Handler marquer comme lu (exemple, à adapter selon backend)
+  const handleMarkRead = (msg: ContactMessage) => {
+    // TODO: Appel API pour marquer comme lu
+    // Ici, on simule juste un effet visuel
+    setMessages(messages.map(m => m.id === msg.id ? { ...m, read: true } : m));
+  };
+
+  // Handler ouvrir modale réponse
+  const handleReply = (msg: ContactMessage) => {
+    setReplyingTo(msg);
+    setReplyContent('');
+    setReplySuccess('');
+    setReplyError('');
+    setShowReplyModal(true);
+  };
+  const handleSendReply = async () => {
+    setSendingReply(true);
+    setReplySuccess('');
+    setReplyError('');
+    try {
+      // TODO: Appel API pour envoyer la réponse (à implémenter côté backend)
+      // Simule succès
+      setTimeout(() => {
+        setReplySuccess('Réponse envoyée avec succès !');
+        setSendingReply(false);
+        setTimeout(() => {
+          setShowReplyModal(false);
+        }, 1200);
+      }, 900);
+    } catch (e) {
+      setReplyError('Erreur lors de l’envoi de la réponse.');
+      setSendingReply(false);
+    }
+  };
+
   return (
-    <div className="admin-section-bg">
-      <AdminHeader />
-      <div className="admin-section-container">
-        <h2>Gestion des Contacts</h2>
-        {loading ? (
-          <div>Chargement...</div>
-        ) : error ? (
-          <div className="admin-login-error">{error}</div>
-        ) : messages.length === 0 ? (
-          <div>Aucun message de contact trouvé.</div>
-        ) : (
-          <div className="admin-contact-table-wrapper">
-            <table className="admin-contact-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Message</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {messages.map(msg => (
-                  <tr key={msg.id}>
-                    <td>{msg.id}</td>
-                    <td>{msg.name}</td>
-                    <td>{msg.email}</td>
-                    <td>{msg.message}</td>
-                    <td>{msg.created_at}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+    <div className="flex min-h-screen bg-gray-100">
+      <AdminSidebar />
+      <div className="flex-1 flex flex-col min-h-screen">
+        <AdminHeader />
+        <main className="flex-1 p-6 md:p-20">
+          <h2 className="text-3xl font-bold mb-8 text-gray-800 text-center">Gestion des contacts</h2>
+          {loading ? (
+            <div className="flex justify-center items-center h-40 text-lg text-gray-500 animate-pulse">Chargement...</div>
+          ) : error ? (
+            <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4 shadow">{error}</div>
+          ) : messages.length === 0 ? (
+            <div className="text-center text-gray-500 py-12">Aucun message de contact trouvé.</div>
+          ) : (
+            <div className="w-full flex justify-center">
+              <div className="overflow-x-auto w-full max-w-6xl mx-auto">
+                <table className={`w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 ${animate ? 'animate-fadein' : ''}`}>
+                  <thead>
+                    <tr className="bg-gray-50 text-gray-700 text-sm">
+                       <th className="py-3 px-4 font-semibold text-center min-w-[120px]">Nom</th>
+                       <th className="py-3 px-4 font-semibold text-center min-w-[180px]">Email</th>
+                       <th className="py-3 px-4 font-semibold text-left min-w-[220px]">Message</th>
+                       <th className="py-3 px-4 font-semibold text-center min-w-[140px]">Date</th>
+                       <th className="py-3 px-4 font-semibold text-center min-w-[140px]">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {messages.map((msg, idx) => (
+                      <tr
+                        key={msg.id}
+                        className={`transition-all duration-300 hover:bg-blue-50 group ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                        style={{ animationDelay: `${idx * 60}ms` }}
+                      >
+                         <td className="py-3 px-4 text-center text-gray-800 font-medium align-middle">{msg.name}</td>
+                         <td className="py-3 px-4 text-center text-blue-700 underline align-middle">{msg.email}</td>
+                         <td className="py-3 px-4 text-left max-w-xs text-gray-600 break-words align-middle">{msg.message}</td>
+                         <td className="py-3 px-4 text-center text-gray-500 whitespace-nowrap align-middle">{msg.created_at}</td>
+                         <td className="py-3 px-4 flex gap-2 items-center justify-center align-middle">
+                          <button
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-semibold shadow hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            title="Répondre"
+                            onClick={() => handleReply(msg)}
+                          >
+                            <Mail size={18} /> Répondre
+                          </button>
+                          <button
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-400"
+                            title="Supprimer"
+                            onClick={() => handleDelete(msg)}
+                          >
+                            <Trash size={18} /> Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {/* Modale de confirmation suppression */}
+                {showDeleteModal && (
+                  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowDeleteModal(false)}>
+                    <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
+                      <div className="text-lg font-semibold mb-4 text-gray-800">Supprimer ce message ?</div>
+                      <div className="flex gap-3 justify-end mt-6">
+                        <button className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition" onClick={confirmDelete}>Confirmer</button>
+                        <button className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition" onClick={() => setShowDeleteModal(false)}>Annuler</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* Modale de réponse */}
+                {showReplyModal && (
+                  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowReplyModal(false)}>
+                    <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
+                      <div className="text-lg font-semibold mb-4 text-gray-800">Répondre à {replyingTo?.name}</div>
+                      <textarea
+                        className="w-full border border-gray-300 rounded-lg p-3 mb-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                        placeholder="Votre réponse..."
+                        value={replyContent}
+                        onChange={e => setReplyContent(e.target.value)}
+                        rows={5}
+                        disabled={sendingReply}
+                        autoFocus
+                      />
+                      {replySuccess && <div className="text-green-600 mb-2 font-medium">{replySuccess}</div>}
+                      {replyError && <div className="text-red-600 mb-2 font-medium">{replyError}</div>}
+                      <div className="flex gap-3 justify-end mt-4">
+                        <button
+                          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60"
+                          onClick={handleSendReply}
+                          disabled={sendingReply || !replyContent.trim()}
+                        >
+                          Envoyer
+                        </button>
+                        <button
+                          className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition"
+                          onClick={() => setShowReplyModal(false)}
+                          disabled={sendingReply}
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </main>
+        <AdminFooter />
       </div>
-      <AdminFooter />
     </div>
   );
 };
