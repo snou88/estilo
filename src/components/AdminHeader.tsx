@@ -1,27 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LogOut } from 'lucide-react';
 import './AdminHeader.css';
 
 const ADMIN_NAME = 'Estilo Admin'; // Change ici si besoin
 
 const AdminHeader = () => {
-  const handleLogout = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = async () => {
+    localStorage.removeItem('admin_token');
+    try {
+      await fetch('http://localhost/estilo/admin/logout.php', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (e) {}
     window.location.href = '/admin/login';
   };
+
   return (
-    <header className="admin-header-bar">
-      <div className="admin-header-bar-inner">
-        <div className="admin-header-logo">
-          <img src="/estilo.svg" alt="Estilo Admin" />
+    <>
+      <header className="admin-header-bar">
+        <div className="admin-header-bar-inner">
+          <div className="admin-header-logo">
+            <img src="/estilo.svg" alt="Estilo Admin" />
+          </div>
+          <div className="admin-header-user">
+            <span className="admin-header-username">{ADMIN_NAME}</span>
+            <button className="admin-header-logout-btn" onClick={() => setShowLogoutModal(true)} title="Déconnexion">
+              <LogOut size={21} />
+            </button>
+          </div>
         </div>
-        <div className="admin-header-user">
-          <span className="admin-header-username">{ADMIN_NAME}</span>
-          <button className="admin-header-logout-btn" onClick={handleLogout} title="Déconnexion">
-            <LogOut size={21} />
-          </button>
+      </header>
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowLogoutModal(false)}>
+          <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
+            <div className="text-lg font-semibold mb-4 text-gray-800">Voulez-vous vraiment vous déconnecter ?</div>
+            <div className="flex gap-3 justify-end mt-6">
+              <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition" onClick={handleLogout}>Confirmer</button>
+              <button className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition" onClick={() => setShowLogoutModal(false)}>Annuler</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+      )}
+    </>
   );
 };
 

@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-if (  $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if  ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
@@ -13,21 +13,27 @@ require_once '../config/db_config.php';
 
 try {
     // Join products with one image (main if possible, else any)
-    $sql = 'SELECT p.*, c.name AS category, COALESCE(pi.image_path, "") AS image
+    $sql = 'SELECT p.*, c.name AS category
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
-            LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_main = TRUE
-            GROUP BY p.id
             ORDER BY p.id ASC';
     $stmt = $pdo->query($sql);
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // If no main image, get any image for products with no image
+    // Pour chaque produit, récupérer l'image principale (et couleur)
     foreach ($products as &$product) {
-        if (empty($product['image'])) {
-            $imgStmt = $pdo->prepare('SELECT image_path FROM product_images WHERE product_id = ? LIMIT 1');
-            $imgStmt->execute([$product['id']]);
-            $img = $imgStmt->fetchColumn();
-            $product['image'] = $img ? $img : '';
+        $imgStmt = $pdo->prepare('SELECT image_path, color FROM product_images WHERE product_id = ? AND is_main = 1 LIMIT 1');
+        $imgStmt->execute([$product['id']]);
+        $img = $imgStmt->fetch(PDO::FETCH_ASSOC);
+        if ($img) {
+            $product['image'] = $img['image_path'];
+            $product['color'] = $img['color'];
+        } else {
+            // Si pas d'image principale, prendre la première image
+            $imgStmt2 = $pdo->prepare('SELECT image_path, color FROM product_images WHERE product_id = ? LIMIT 1');
+            $imgStmt2->execute([$product['id']]);
+            $img2 = $imgStmt2->fetch(PDO::FETCH_ASSOC);
+            $product['image'] = $img2 ? $img2['image_path'] : '';
+            $product['color'] = $img2 ? $img2['color'] : '';
         }
     }
     echo json_encode(['products' => $products]);

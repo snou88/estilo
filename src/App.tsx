@@ -21,7 +21,7 @@ import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProducts from './pages/admin/Products';
 import AdminContact from './pages/admin/Contact';
-import AdminComments from './pages/admin/Comments';
+import AdminOrders from './pages/admin/Orders';
 import AdminStatistics from './pages/admin/Statistics';
 import AdminSettings from './pages/admin/Settings';
 import Admin from './pages/admin/Admin';
@@ -57,7 +57,7 @@ function App() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/contact" element={<AdminContact />} />
-        <Route path="/admin/comments" element={<AdminComments />} />
+        <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/statistics" element={<AdminStatistics />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
       </Routes>

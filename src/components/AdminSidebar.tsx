@@ -7,7 +7,7 @@ const links = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={22} /> },
   { to: '/admin/products', label: 'Produits', icon: <Package size={22} /> },
   { to: '/admin/contact', label: 'Contact', icon: <Mail size={22} /> },
-  { to: '/admin/comments', label: 'Commentaires', icon: <MessageCircle size={22} /> },
+  { to: '/admin/Orders', label: 'Order', icon: <MessageCircle size={22} /> },
   { to: '/admin/statistics', label: 'Statistiques', icon: <BarChart2 size={22} /> },
   { to: '/admin/settings', label: 'Paramètres', icon: <Settings size={22} /> },
 ];
