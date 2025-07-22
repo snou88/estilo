@@ -23,7 +23,7 @@ const Login = () => {
       formData.append('password', password);
 
       // Envoyer la requête POST vers le backend PHP via le proxy
-      const response = await fetch('/admin/login.php', {
+      const response = await fetch('http://localhost/estilo/admin/login.php', {
         method: 'POST',
         body: formData,
         credentials: 'include'

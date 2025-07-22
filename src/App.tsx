@@ -24,9 +24,12 @@ import AdminContact from './pages/admin/Contact';
 import AdminComments from './pages/admin/Comments';
 import AdminStatistics from './pages/admin/Statistics';
 import AdminSettings from './pages/admin/Settings';
+import Admin from './pages/admin/Admin';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
+    <AuthProvider>
     <Router {...routerConfig}>
       <Routes>
         {/* Public pages avec Header/Footer */}
@@ -42,7 +45,7 @@ function App() {
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/contact" element={<Contact />} />
-                  <Route path="/admin" element={<AdminLogin />} />
+                  <Route path="/admin" element={<Admin />} />
                 </Routes>
               </main>
               <Footer />
@@ -50,6 +53,7 @@ function App() {
           }
         />
         {/* Pages admin sans Header/Footer public */}
+        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/contact" element={<AdminContact />} />
@@ -58,7 +62,8 @@ function App() {
         <Route path="/admin/settings" element={<AdminSettings />} />
       </Routes>
     </Router>
-  );
+    </AuthProvider>
+      );
 }
 
 export default App;

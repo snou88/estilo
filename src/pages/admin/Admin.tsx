@@ -3,10 +3,10 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const Admin: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth(); 
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/Admin/login" replace />;
   }
 
   return (
@@ -73,7 +73,6 @@ const Admin: React.FC = () => {
           </div>
         </header>
         <main>
-          <Outlet />
         </main>
         <footer className="admin-footer">
           <p>&copy; 2025 Estilo. Tous droits réservés.</p>
