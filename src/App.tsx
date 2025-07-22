@@ -45,7 +45,6 @@ function App() {
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/contact" element={<Contact />} />
-                  <Route path="/admin" element={<Admin />} />
                 </Routes>
               </main>
               <Footer />
@@ -53,6 +52,7 @@ function App() {
           }
         />
         {/* Pages admin sans Header/Footer public */}
+        <Route path="/admin" element={<Admin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminProducts />} />
