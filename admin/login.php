@@ -20,18 +20,14 @@ try {
     }
 
     // Préparer la requête pour récupérer l'utilisateur
-    $stmt = $pdo->prepare('SELECT id, email, password FROM admins WHERE email = :email');
+    $stmt = $pdo->prepare('SELECT id, email, password, token FROM admins WHERE email = :email');
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        // Authentification réussie : on peut stocker l'utilisateur en session
-        $_SESSION['user_id']    = $user['id'];
-        $_SESSION['user_email'] = $user['email'];
-
-        // Répondre OK
+        // Authentification réussie : retourner le token
         http_response_code(200);
-        echo json_encode(['message' => 'Connexion réussie']);
+        echo json_encode(['token' => $user['token']]);
         exit;
     } else {
         // Échec d'authentification

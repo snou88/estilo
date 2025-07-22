@@ -29,11 +29,13 @@ const Login = () => {
         credentials: 'include'
       });
 
-      // Redirection vers le dashboard si succès
+      const responseData = await response.json();
+
       if (response.ok) {
+        localStorage.setItem('admin_token', responseData.token);
         window.location.href = '/admin/dashboard';
       } else {
-        throw new Error('Erreur de connexion');
+        setError(responseData.error || 'Erreur de connexion');
       }
     } catch (error) {
       setError('Une erreur est survenue lors de la connexion');
