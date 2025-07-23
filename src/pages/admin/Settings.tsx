@@ -1,179 +1,337 @@
 import React, { useState, useEffect } from 'react';
+import { UserPlus, Trash2, ShieldCheck, Loader2 } from 'lucide-react';
+import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
-import { UserPlus, Trash2, ShieldCheck, Loader2 } from 'lucide-react';
+import './AdminSection.css';
 
-// Mock temporaire (à remplacer par fetch backend)
-const MOCK_ADMINS = [
-  { id: 1, name: 'Super Admin', email: 'admin@estilo.com', role: 'Super Admin', created_at: '2024-01-01' },
-  { id: 2, name: 'Sarah', email: 'sarah@estilo.com', role: 'Admin', created_at: '2024-04-12' },
-  { id: 3, name: 'Yassine', email: 'yassine@estilo.com', role: 'Admin', created_at: '2024-05-03' },
-];
+interface Admin {
+  id: number;
+  username: string;
+  email: string;
+  created_at: string;
+  is_main_admin?: boolean;
+}
 
 const Settings = () => {
-  const [admins, setAdmins] = useState(MOCK_ADMINS);
-  const [loading, setLoading] = useState(false);
+  const [admins, setAdmins] = useState<Admin[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addForm, setAddForm] = useState({ name: '', email: '', password: '', role: 'Admin' });
+  const [addForm, setAddForm] = useState({ 
+    username: '', 
+    email: '', 
+    password: ''
+  });
   const [addError, setAddError] = useState('');
   const [addSuccess, setAddSuccess] = useState(false);
-  const [deletingId, setDeletingId] = useState<number|null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [error, setError] = useState('');
 
-  // TODO: Remplacer par fetch backend
-  // useEffect(() => { ... }, []);
-
-  const handleAddInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setAddForm(f => ({ ...f, [name]: value }));
+  // Fetch admins from backend
+  const fetchAdmins = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch('http://localhost/estilo/admin/get_all_admins.php', {
+        headers: {
+          'Authorization': token || ''
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur réseau lors de la récupération des administrateurs');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.admins)) {
+        setAdmins(data.admins);
+      } else {
+        throw new Error(data.error || 'Format de réponse inattendu du serveur');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      setError(`Erreur lors du chargement des administrateurs: ${errorMessage}`);
+      console.error('Error fetching admins:', err);
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleAddSubmit = (e: React.FormEvent) => {
+
+  useEffect(() => {
+    fetchAdmins();
+  }, []);
+
+  const handleAddInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAddForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAddError('');
     setAddSuccess(false);
-    if (!addForm.name || !addForm.email || !addForm.password) {
+    
+    if (!addForm.username || !addForm.email || !addForm.password) {
       setAddError('Tous les champs sont obligatoires');
       return;
     }
-    // Simule ajout
-    setAdmins(prev => [
-      ...prev,
-      { id: Math.max(...prev.map(a => a.id)) + 1, name: addForm.name, email: addForm.email, role: addForm.role, created_at: new Date().toISOString().slice(0, 10) }
-    ]);
-    setAddSuccess(true);
-    setTimeout(() => {
-      setShowAddModal(false);
-      setAddForm({ name: '', email: '', password: '', role: 'Admin' });
-      setAddSuccess(false);
-    }, 1200);
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch('http://localhost/estilo/admin/add_admin.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token || ''
+        },
+        body: JSON.stringify(addForm)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setAddSuccess(true);
+        setAddForm({ username: '', email: '', password: '' });
+        await fetchAdmins(); // Refresh the list
+        
+        setTimeout(() => {
+          setShowAddModal(false);
+          setAddSuccess(false);
+        }, 1500);
+      } else {
+        throw new Error(data.error || 'Erreur lors de l\'ajout de l\'administrateur');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      setAddError(errorMessage);
+      console.error('Error adding admin:', err);
+    }
   };
-  const handleDelete = (id: number) => {
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet administrateur ?')) {
+      return;
+    }
+    
     setDeletingId(id);
-    setTimeout(() => {
-      setAdmins(prev => prev.filter(a => a.id !== id));
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch('http://localhost/estilo/admin/delete_admin.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token || ''
+        },
+        body: JSON.stringify({ id })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setAdmins(prev => prev.filter(admin => admin.id !== id));
+      } else {
+        throw new Error(data.error || 'Erreur lors de la suppression');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      alert(`Erreur lors de la suppression: ${errorMessage}`);
+      console.error('Error deleting admin:', err);
+      await fetchAdmins(); // Refresh the list in case of error
+    } finally {
       setDeletingId(null);
-    }, 900);
+    }
+  };
+
+  // Format date to display
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100">
-      <AdminHeader />
-      <main className="flex-1 flex flex-col items-center justify-center py-12 px-4">
-        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl p-8 animate-fadein">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Gestion des administrateurs</h2>
-            <button
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
-              onClick={() => setShowAddModal(true)}
-            >
-              <UserPlus size={20} /> Ajouter un admin
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-xl shadow overflow-hidden">
-              <thead>
-                <tr className="bg-gray-50 text-gray-700 text-sm">
-                  <th className="py-3 px-4 font-semibold text-center">ID</th>
-                  <th className="py-3 px-4 font-semibold text-center">Nom</th>
-                  <th className="py-3 px-4 font-semibold text-center">Email</th>
-                  <th className="py-3 px-4 font-semibold text-center">Rôle</th>
-                  <th className="py-3 px-4 font-semibold text-center">Créé le</th>
-                  <th className="py-3 px-4 font-semibold text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {admins.map((admin, idx) => (
-                  <tr key={admin.id} className="transition-all duration-300 hover:bg-blue-50 group">
-                    <td className="py-3 px-4 text-center text-gray-700 font-semibold">{admin.id}</td>
-                    <td className="py-3 px-4 text-center text-gray-800 font-medium flex items-center gap-2 justify-center">
-                      {admin.id === 1 && <ShieldCheck size={18} className="text-blue-500" aria-label="Super Admin" />} {admin.name}
-                    </td>
-                    <td className="py-3 px-4 text-center text-blue-700 underline">{admin.email}</td>
-                    <td className="py-3 px-4 text-center text-gray-600">{admin.role}</td>
-                    <td className="py-3 px-4 text-center text-gray-500">{admin.created_at}</td>
-                    <td className="py-3 px-4 text-center">
-                      {admin.id !== 1 && (
-                        <button
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-400"
-                          onClick={() => handleDelete(admin.id)}
-                          disabled={deletingId === admin.id}
-                        >
-                          {deletingId === admin.id ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
-                          Supprimer
-                        </button>
-                      )}
-                      {admin.id === 1 && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-200 text-gray-500 text-sm font-semibold cursor-not-allowed">
-                          <ShieldCheck size={16} /> Protégé
-                        </span>
-                      )}
-                    </td>
+    <div className="admin-container">
+      <AdminSidebar />
+      <div className="admin-content">
+        <AdminHeader />
+        <main className="flex-1 flex flex-col p-8">
+          <div className="w-full bg-white rounded-2xl shadow-2xl p-8 animate-fadein">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-gray-800">Gestion des administrateurs</h2>
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+                onClick={() => setShowAddModal(true)}
+              >
+                <UserPlus size={20} /> Ajouter un admin
+              </button>
+            </div>
+            
+            {error && (
+              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+            
+            <div className="overflow-x-auto">
+              <table className="w-full bg-white rounded-xl shadow overflow-hidden">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-700 text-sm">
+                    <th className="py-3 px-4 font-semibold text-center">ID</th>
+                    <th className="py-3 px-4 font-semibold text-center">Nom d'utilisateur</th>
+                    <th className="py-3 px-4 font-semibold text-center">Email</th>
+                    <th className="py-3 px-4 font-semibold text-center">Créé le</th>
+                    <th className="py-3 px-4 font-semibold text-center">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        {/* Pop-up ajout admin */}
-        {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowAddModal(false)}>
-            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
-              <div className="text-xl font-bold mb-4 text-gray-800 text-center">Ajouter un administrateur</div>
-              {addSuccess ? (
-                <div className="text-green-600 text-center font-semibold mb-4">Admin ajouté avec succès !</div>
-              ) : (
-              <form className="space-y-5" onSubmit={handleAddSubmit}>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Nom"
-                  value={addForm.name}
-                  onChange={handleAddInput}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={addForm.email}
-                  onChange={handleAddInput}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Mot de passe"
-                  value={addForm.password}
-                  onChange={handleAddInput}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                />
-                <select
-                  name="role"
-                  value={addForm.role}
-                  onChange={handleAddInput}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                >
-                  <option value="Admin">Admin</option>
-                  <option value="Super Admin">Super Admin</option>
-                </select>
-                <div className="flex gap-3 justify-end mt-4">
-                  <button type="submit" className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60">
-                    Ajouter
-                  </button>
-                  <button type="button" className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition" onClick={() => setShowAddModal(false)}>
-                    Annuler
-                  </button>
-                </div>
-                {addError && <div className="bg-red-100 text-red-700 px-4 py-2 rounded text-center text-sm font-medium animate-shake mt-2">{addError}</div>}
-              </form>
-              )}
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-gray-500">
+                        <div className="flex justify-center">
+                          <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
+                        </div>
+                      </td>
+                    </tr>
+                  ) : admins.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-gray-500">
+                        Aucun administrateur trouvé
+                      </td>
+                    </tr>
+                  ) : (
+                    admins.map((admin) => (
+                      <tr key={admin.id} className="transition-all duration-300 hover:bg-blue-50 group">
+                        <td className="py-3 px-4 text-center text-gray-700 font-semibold">{admin.id}</td>
+                        <td className="py-3 px-4 text-center text-gray-800 font-medium flex items-center gap-2 justify-center">
+                          {admin.is_main_admin && <ShieldCheck size={18} className="text-blue-500" aria-label="Administrateur principal" />} 
+                          {admin.username}
+                        </td>
+                        <td className="py-3 px-4 text-center text-blue-700">{admin.email}</td>
+                        <td className="py-3 px-4 text-center text-gray-500">
+                          {formatDate(admin.created_at)}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {!admin.is_main_admin && (
+                            <button
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-400"
+                              onClick={() => handleDelete(admin.id)}
+                              disabled={deletingId === admin.id}
+                            >
+                              {deletingId === admin.id ? (
+                                <Loader2 className="animate-spin" size={16} />
+                              ) : (
+                                <Trash2 size={16} />
+                              )}
+                              <span className="hidden sm:inline">Supprimer</span>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-        )}
-      </main>
-      <AdminFooter />
+        </main>
+        <AdminFooter />
+      </div>
+
+      {/* Add Admin Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-scale-in">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-800">Ajouter un administrateur</h3>
+              <button 
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                &times;
+              </button>
+            </div>
+            
+            {addError && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {addError}
+              </div>
+            )}
+            
+            {addSuccess ? (
+              <div className="p-6 text-center">
+                <div className="text-green-500 text-4xl mb-4">✓</div>
+                <p className="text-lg font-medium text-gray-800">Administrateur ajouté avec succès !</p>
+              </div>
+            ) : (
+              <form onSubmit={handleAddSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={addForm.username}
+                    onChange={handleAddInput}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nom d'utilisateur"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={addForm.email}
+                    onChange={handleAddInput}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="email@exemple.com"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={addForm.password}
+                    onChange={handleAddInput}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="••••••••"
+                  />
+                </div>
+                
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                    disabled={!addForm.username || !addForm.email || !addForm.password}
+                  >
+                    {addSuccess ? (
+                      <>
+                        <Loader2 className="animate-spin" size={18} />
+                        Ajout en cours...
+                      </>
+                    ) : 'Ajouter'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
