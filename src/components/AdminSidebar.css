@@ -57,9 +57,10 @@
 
 /* Main content area adjustments */
 .admin-content {
-  margin-left: 220px; /* Increased from 220px to add more space */
-  width: calc(100% - 220px);
+  padding-left: 220px; /* Increased from 220px to add more space */
+  width: 100%;
   padding: 20px 30px;
+  padding-left: 240px;
   transition: all 0.3s ease;
 }
 
