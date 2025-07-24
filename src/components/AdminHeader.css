@@ -1,3 +1,8 @@
+body{
+  padding-top: 64px;
+}
+
+
 .admin-header-bar {
   width: 100%;
   height: 64px;
@@ -11,6 +16,7 @@
   z-index: 101;
   padding-left: 220px; /* espace sidebar */
 }
+
 .admin-header-bar-inner {
   width: 100%;
   max-width: 1400px;
