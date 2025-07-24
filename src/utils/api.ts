@@ -1,5 +1,5 @@
 // Configuration API pour les futures intégrations backend
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
+const API_BASE_URL = import.meta.env.MODE === 'production' 
   ? 'https://api.estilo.com' 
   : 'http://localhost:8000';
 
@@ -32,3 +32,13 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     throw error;
   }
 };
+
+// Base URL for PHP API endpoints (for XAMPP/localhost)
+export const PHP_API_BASE_URL = import.meta.env.MODE === 'production'
+  ? 'https://api.estilo.com' // Update if you deploy PHP API
+  : 'http://localhost/estilo/';
+
+// Helper to get full PHP API endpoint
+export const getPhpApiUrl = (endpoint: string) => `${PHP_API_BASE_URL}${endpoint}`;
+
+// Example: getPhpApiUrl('api/products/read.php')

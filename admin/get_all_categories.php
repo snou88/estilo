@@ -8,7 +8,8 @@ if (  $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 header('Content-Type: application/json');
-require_once 'verify_admin_token.php';
+// Public not only admins
+// require_once 'verify_admin_token.php';
 require_once '../config/db_config.php';
 
 try {
