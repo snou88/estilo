@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingBag, Search, User } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { cartItems } = useCart(); // Get cart items from context
+  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const navigation = [
     { name: 'Accueil', href: '/' },
@@ -54,12 +57,17 @@ const Header = () => {
             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <User className="h-5 w-5" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
+            <Link 
+              to="/cart" 
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+            >
               <ShoppingBag className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </button>
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
           </div>
 
           {/* Menu Mobile */}
@@ -95,12 +103,18 @@ const Header = () => {
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <User className="h-5 w-5" />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
+              <Link 
+                to="/cart" 
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <ShoppingBag className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
-              </button>
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
             </div>
           </div>
         )}
