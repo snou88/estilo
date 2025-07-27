@@ -54,9 +54,6 @@ const Header = () => {
             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <Search className="h-5 w-5" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <User className="h-5 w-5" />
-            </button>
             <Link 
               to="/cart" 
               className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
@@ -99,9 +96,6 @@ const Header = () => {
             <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-gray-100">
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <Search className="h-5 w-5" />
-              </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <User className="h-5 w-5" />
               </button>
               <Link 
                 to="/cart" 

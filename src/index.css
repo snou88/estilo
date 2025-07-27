@@ -1,5 +1,7 @@
+/* Custom animations */
+@import './styles/contact-animations.css';
+
+/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/contact-animations.css';

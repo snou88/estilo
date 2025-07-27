@@ -1,57 +1,159 @@
-body{
-  padding-top: 64px;
+:root {
+  --header-height: 64px;
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
+  --transition: all 0.2s ease-in-out;
 }
 
+body {
+  padding-top: var(--header-height);
+}
 
+/* Header Styles */
 .admin-header-bar {
-  width: 100%;
-  height: 64px;
-  background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(60,72,100,0.08);
-  display: flex;
-  align-items: center;
   position: fixed;
-  left: 0;
   top: 0;
-  z-index: 101;
-  padding-left: 220px; /* espace sidebar */
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .admin-header-bar-inner {
-  width: 100%;
   max-width: 1400px;
+  height: 100%;
   margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  padding: 0 32px;
 }
+
+/* Logo */
+.admin-header-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 .admin-header-logo img {
-  height: 36px;
+  height: 28px;
   width: auto;
+  transition: var(--transition);
 }
+
+.admin-header-logo:hover img {
+  transform: scale(1.05);
+}
+
+/* User Section */
 .admin-header-user {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 1rem;
 }
+
 .admin-header-username {
-  font-weight: 600;
-  color: #222;
-  font-size: 1.08rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-right: 0.25rem;
 }
+
+/* Logout Button */
 .admin-header-logout-btn {
-  background: #f8fafc;
-  border: none;
-  border-radius: 6px;
-  padding: 7px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background-color: #f8fafc;
+  color: var(--primary-color);
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  color: #2563eb;
-  transition: background 0.15s;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.admin-header-logout-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Hamburger Button */
+#hamburger-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
 }
-.admin-header-logout-btn:hover {
-  background: #e6eeff;
+
+#hamburger-button:hover {
+  background-color: #f3f4f6;
+}
+
+#hamburger-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .admin-header-bar-inner {
+    padding: 0 1rem;
+  }
+  
+  .admin-header-username {
+    display: none;
+  }
+  
+  /* Assurez-vous que le bouton est visible sur mobile */
+  #hamburger-button {
+    display: flex !important;
+  }
+  
+  .admin-header-logout-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  
+  .admin-header-logo img {
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header-logout-btn span {
+    display: none;
+  }
+  
+  .admin-header-logout-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+  }
+  
+  .admin-header-logout-btn svg {
+    margin: 0;
+  }
 }

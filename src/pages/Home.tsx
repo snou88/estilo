@@ -7,28 +7,28 @@ const Home = () => {
     {
       id: 1,
       name: 'Veste Élégante',
-      price: '89,99 €',
+      price: '8900 DA',
       image: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Vestes'
     },
     {
       id: 2,
       name: 'Robe Moderne',
-      price: '65,99 €',
+      price: '6500 DA',
       image: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Robes'
     },
     {
       id: 3,
       name: 'Chemise Classique',
-      price: '45,99 €',
+      price: '4500 DA',
       image: 'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Chemises'
     },
     {
       id: 4,
       name: 'Pantalon Tendance',
-      price: '75,99 €',
+      price: '7500 DA',
       image: 'https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Pantalons'
     }

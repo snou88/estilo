@@ -1,7 +1,5 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../../components/AdminHeader';
-import AdminSidebar from '../../components/AdminSidebar';
 import { adminIcons } from '../../components/AdminIcons';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminDashboard.css';
@@ -10,31 +8,43 @@ const Dashboard = () => {
   const navigate = useNavigate();
   return (
     <div className="admin-layout">
+      <AdminHeader />
       <div className="admin-main">
-        <AdminHeader />
-        <main className="admin-content">
-          <h2 className="admin-dashboard-title">Dashboard Admin</h2>
-          <div className="admin-dashboard-circles">
-            {adminIcons.map((circle) => {
-              const Icon = circle.icon;
+        <div className="admin-content no-sidebar dashboard-page">
+          <header className="admin-dashboard-header">
+            <h1 className="admin-dashboard-title">Tableau de bord Administrateur</h1>
+            <p className="admin-dashboard-subtitle">Gérez votre boutique en toute simplicité</p>
+          </header>
+          
+          <div className="dashboard-grid">
+            {adminIcons.map((item) => {
+              const Icon = item.icon;
               return (
-                <div
-                  key={circle.label}
-                  className="dashboard-circle dashboard-circle-large"
-                  style={{ backgroundColor: circle.color }}
-                  onClick={() => navigate(circle.to)}
+                <div 
+                  key={item.label}
+                  className="dashboard-card"
+                  onClick={() => navigate(item.to)}
                 >
-                  <span className="dashboard-icon">
-                    <Icon size={48} />
-                  </span>
-                  <span className="dashboard-label">{circle.label}</span>
+                  <div className="dashboard-icon">
+                    <Icon size={24} />
+                  </div>
+                  <h3>{item.label}</h3>
+                  <p>Gérer cette section</p>
                 </div>
               );
             })}
           </div>
-        </main>
-        <AdminFooter />
+          
+          <div className="dashboard-logo-section">
+            <img 
+              src="/estilo.svg" 
+              alt="Estilo Logo" 
+              className="dashboard-logo"
+            />
+          </div>
+        </div>
       </div>
+      <AdminFooter />
     </div>
   );
 };
