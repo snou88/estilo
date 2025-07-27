@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { Truck, Shield, RefreshCw, Star, ArrowLeft, ArrowRight } from 'lucide-react';
 
 type Image = {
@@ -34,6 +35,8 @@ const wilayas = [
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -189,9 +192,41 @@ export default function ProductDetail() {
             Total à payer : {total} DA
           </div>
 
-          <button className="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-all mb-2 animate-pulse">
-            Commander maintenant
-          </button>
+          <div className="flex flex-col gap-3">
+            <button 
+              onClick={() => {
+                if (!product) return;
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  color: color,
+                  size: size,
+                  image: product.images[0]?.image_path || ''
+                });
+                navigate('/cart');
+              }}
+              className="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-all mb-2"
+            >
+              Commander maintenant
+            </button>
+            <button 
+              onClick={() => {
+                if (!product) return;
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  color: color,
+                  size: size,
+                  image: product.images[0]?.image_path || ''
+                });
+              }}
+              className="w-full bg-white border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-50 transition-all"
+            >
+              Ajouter au panier
+            </button>
+          </div>
 
           {/* Guarantees */}
           <div className="flex flex-col items-center justify-center gap-2 my-4 text-gray-600 text-sm md:flex-row md:gap-4">
