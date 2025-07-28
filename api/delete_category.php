@@ -5,7 +5,7 @@ header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 
-require_once '../../config/db_config.php';
+require_once '../config/db_config.php';
 
 // Gérer les requêtes OPTIONS pour le CORS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-include '../include/connexion.php';
+include '../config/db_config.php';
 
 // Vérifier la connexion
-if ($conn->connect_error) {
+if (!isset($pdo)) {
     http_response_code(500);
     echo json_encode(['error' => 'Erreur de connexion à la base de données']);
     exit();

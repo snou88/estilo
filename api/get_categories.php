@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once '../../config/db_config.php';
+require_once '../config/db_config.php';
 
 // Vérifier la connexion
 if (!isset($pdo)) {

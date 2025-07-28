@@ -66,10 +66,10 @@ function App() {
                   </div>
                 }
               />
+              <Route path="/admin/login" element={<AdminLogin />} />
               {/* Pages admin sans Header/Footer public */}
               <Route path="/admin" element={<Admin />}>
                 <Route index element={<AdminDashboard />} />
-                <Route path="login" element={<AdminLogin />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="contact" element={<AdminContact />} />
