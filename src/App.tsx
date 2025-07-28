@@ -36,45 +36,50 @@ import Admin from "./pages/admin/Admin";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import { SidebarProvider } from "./contexts/SidebarContext";
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Router {...routerConfig}>
-          <Routes>
-            {/* Public pages avec Header/Footer */}
-            <Route
-              path="*"
-              element={
-                <div className="min-h-screen bg-white text-black">
-                  <Header />
-                  <main>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/product/:id" element={<ProductDetail />} />
-                      <Route path="/about" element={<AboutUs />} />
-                      <Route path="/faq" element={<FAQ />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/cart" element={<CartPage />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                </div>
-              }
-            />
-            {/* Pages admin sans Header/Footer public */}
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/products" element={<AdminProducts />} />
-            <Route path="/admin/contact" element={<AdminContact />} />
-            <Route path="/admin/orders" element={<AdminOrders />} />
-            <Route path="/admin/statistics" element={<AdminStatistics />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
-          </Routes>
-        </Router>
+        <SidebarProvider>
+          <Router {...routerConfig}>
+            <Routes>
+              {/* Public pages avec Header/Footer */}
+              <Route
+                path="*"
+                element={
+                  <div className="min-h-screen bg-white text-black">
+                    <Header />
+                    <main>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/product/:id" element={<ProductDetail />} />
+                        <Route path="/about" element={<AboutUs />} />
+                        <Route path="/faq" element={<FAQ />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/cart" element={<CartPage />} />
+                      </Routes>
+                    </main>
+                    <Footer />
+                  </div>
+                }
+              />
+              {/* Pages admin sans Header/Footer public */}
+              <Route path="/admin" element={<Admin />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="login" element={<AdminLogin />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="contact" element={<AdminContact />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="statistics" element={<AdminStatistics />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+            </Routes>
+          </Router>
+        </SidebarProvider>
       </CartProvider>
     </AuthProvider>
   );
