@@ -5,8 +5,9 @@ import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
 import './ProductsAdmin.css';
 import model from '../../assets/images/products/model.png';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, Trash, Plus } from 'lucide-react';
 import AddProductModal from './AddProductModal';
+import { useEffect as UseEffect, useState as UseState } from 'react';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -39,6 +40,8 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showSizeModal, setShowSizeModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   // Pop-up de modification produit
   const [editForm, setEditForm] = useState({
     name: '',
@@ -110,7 +113,7 @@ const Products = () => {
         });
         const data = await response.json();
         if (response.ok) setCategories(data.categories || []);
-      } catch {}
+      } catch { }
     };
     fetchCategories();
   }, []);
@@ -290,7 +293,9 @@ const Products = () => {
       <div className="admin-main">
         <AdminHeader />
         <main className={`admin-content products-fadein${animate ? ' show' : ''}`}>
-          <h2 className="admin-dashboard-title">Gestion des produits</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="admin-dashboard-title">Gestion des produits</h2>
+          </div>
           <div className="products-filter-bar">
             <input
               type="text"
@@ -299,6 +304,26 @@ const Products = () => {
               onChange={e => { setPage(1); setFilter(e.target.value); }}
               className="products-filter-input"
             />
+            <div className="flex gap-4 ml-4">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700 font-bold">Taille</span>
+                <button
+                  onClick={() => setShowSizeModal(true)}
+                  className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-sm"
+                >
+                  + Ajouter
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700 font-bold">Catégorie</span>
+                <button
+                  onClick={() => setShowCategoryModal(true)}
+                  className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-sm"
+                >
+                  + Ajouter
+                </button>
+              </div>
+            </div>
           </div>
           {loading ? (
             <div>Chargement...</div>
@@ -362,131 +387,131 @@ const Products = () => {
                   // fetchProducts();
                 }}
               />
-                  {/* Modale de confirmation suppression */}
-                  {showDeleteModal && (
-                    <div className="product-modal-overlay">
-                      <div className="product-modal">
-                        <div className="product-modal-title">Supprimer ce produit ?</div>
-                        <div className="product-modal-actions">
-                          <button className="product-modal-btn" onClick={confirmDelete}>Confirmer</button>
-                          <button className="product-modal-btn cancel" onClick={() => setShowDeleteModal(false)}>Annuler</button>
-                        </div>
-                      </div>
+              {/* Modale de confirmation suppression */}
+              {showDeleteModal && (
+                <div className="product-modal-overlay">
+                  <div className="product-modal">
+                    <div className="product-modal-title">Supprimer ce produit ?</div>
+                    <div className="product-modal-actions">
+                      <button className="product-modal-btn" onClick={confirmDelete}>Confirmer</button>
+                      <button className="product-modal-btn cancel" onClick={() => setShowDeleteModal(false)}>Annuler</button>
                     </div>
-                  )}
-                  {/* Pop-up de modification produit */}
-                  {showEditModal && selectedProduct && (
-                    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowEditModal(false)}>
-                      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
-                        <div className="text-xl font-bold mb-4 text-gray-800 text-center">Modifier le produit</div>
-                        {editSuccess ? (
-                          <div className="text-green-600 text-center font-semibold mb-4">Produit modifié avec succès !</div>
-                        ) : (
-                        <form className="space-y-5" onSubmit={handleEditSubmit}>
-                          <input
-                            type="text"
-                            name="name"
-                            placeholder="Nom du produit"
-                            value={editForm.name}
-                            onChange={handleEditInput}
-                            required
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                          />
-                          <select
-                            name="category_id"
-                            value={editForm.category_id}
-                            onChange={handleEditInput}
-                            required
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                          >
-                            <option value="">Catégorie</option>
-                            {categories.map(cat => (
-                              <option key={cat.id} value={cat.id}>{cat.name}</option>
-                            ))}
-                          </select>
-                          <input
-                            type="number"
-                            name="price"
-                            placeholder="Prix (DA)"
-                            value={editForm.price}
-                            onChange={handleEditInput}
-                            required
-                            min="0"
-                            step="0.01"
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                          />
-                          <textarea
-                            name="description"
-                            placeholder="Description"
-                            value={editForm.description}
-                            onChange={handleEditInput}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                          />
-                          <div className="flex flex-col gap-2">
-                            <label className="block text-gray-600 text-sm mb-1">Image principale</label>
-                            {editForm.imagePreview && (
-                              <img src={editForm.imagePreview} alt="Aperçu" className="w-24 h-auto object-contain rounded border border-gray-200 mb-2" />
-                            )}
-                            <input
-                              type="file"
-                              name="image"
-                              accept="image/*"
-                              onChange={handleEditImage}
-                              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
-                            />
-                          </div>
-                          {(editImages.length > 0 || editNewImages.length > 0) && (
-                            <div className="flex flex-wrap gap-4 mt-2">
-                              {editImages.map((img, idx) => (
-                                <div key={img.id} className={`bg-white rounded-lg shadow p-3 flex flex-col items-center relative w-36 ${img.toDelete ? 'opacity-40' : ''}`}> 
-                                  <button type="button" className="absolute top-1 right-1 text-red-500" onClick={() => handleEditImageDelete(idx)} title="Supprimer">
-                                    {img.toDelete ? '↺' : '×'}
-                                  </button>
-                                  <img src={`http://localhost/estilo/public${img.image_path}`} alt="img" className="w-24 h-24 object-contain rounded border border-gray-200 mb-2" />
-                                  <label className="text-xs text-gray-500 mb-1">Couleur</label>
-                                  <input type="color" value={img.color || '#cccccc'} onChange={e => handleEditImageColor(idx, e.target.value)} className="w-8 h-8 mb-1" />
-                                  <label className="flex items-center gap-1 text-xs">
-                                    <input type="radio" checked={!!img.is_main} onChange={() => handleEditImageMain(idx)} disabled={img.toDelete} />
-                                    Image principale
-                                  </label>
-                                </div>
-                              ))}
-                              {editNewImages.map((img, idx) => (
-                                <div key={idx} className="bg-white rounded-lg shadow p-3 flex flex-col items-center relative w-36">
-                                  <button type="button" className="absolute top-1 right-1 text-red-500" onClick={() => handleEditRemoveNewImage(idx)} title="Supprimer">
-                                    ×
-                                  </button>
-                                  <img src={URL.createObjectURL(img)} alt="preview" className="w-24 h-24 object-contain rounded border border-gray-200 mb-2" />
-                                  <label className="text-xs text-gray-500 mb-1">Couleur</label>
-                                  <input type="color" value={editNewColors[idx] || '#cccccc'} onChange={e => handleEditNewImageColor(idx, e.target.value)} className="w-8 h-8 mb-1" />
-                                  <label className="flex items-center gap-1 text-xs">
-                                    <input type="radio" checked={editNewIsMain.includes(idx)} onChange={() => handleEditNewImageMain(idx)} />
-                                    Image principale
-                                  </label>
-                                </div>
-                              ))}
-                              {/* Carte d'ajout toujours visible */}
-                              <label className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg w-36 h-36 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50">
-                                <span className="text-3xl text-blue-400">+</span>
-                                <span className="text-xs text-gray-500">Ajouter une image</span>
-                                <input type="file" accept="image/*" multiple className="hidden" onChange={handleEditAddImages} />
-                              </label>
-                            </div>
+                  </div>
+                </div>
+              )}
+              {/* Pop-up de modification produit */}
+              {showEditModal && selectedProduct && (
+                <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowEditModal(false)}>
+                  <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
+                    <div className="text-xl font-bold mb-4 text-gray-800 text-center">Modifier le produit</div>
+                    {editSuccess ? (
+                      <div className="text-green-600 text-center font-semibold mb-4">Produit modifié avec succès !</div>
+                    ) : (
+                      <form className="space-y-5" onSubmit={handleEditSubmit}>
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Nom du produit"
+                          value={editForm.name}
+                          onChange={handleEditInput}
+                          required
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
+                        />
+                        <select
+                          name="category_id"
+                          value={editForm.category_id}
+                          onChange={handleEditInput}
+                          required
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
+                        >
+                          <option value="">Catégorie</option>
+                          {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          name="price"
+                          placeholder="Prix (DA)"
+                          value={editForm.price}
+                          onChange={handleEditInput}
+                          required
+                          min="0"
+                          step="0.01"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
+                        />
+                        <textarea
+                          name="description"
+                          placeholder="Description"
+                          value={editForm.description}
+                          onChange={handleEditInput}
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
+                        />
+                        <div className="flex flex-col gap-2">
+                          <label className="block text-gray-600 text-sm mb-1">Image principale</label>
+                          {editForm.imagePreview && (
+                            <img src={editForm.imagePreview} alt="Aperçu" className="w-24 h-auto object-contain rounded border border-gray-200 mb-2" />
                           )}
-                          <div className="flex gap-3 justify-end mt-4">
-                            <button type="submit" className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60" disabled={editLoading}>
-                              {editLoading ? 'Enregistrement...' : 'Enregistrer'}
-                            </button>
-                            <button type="button" className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition" onClick={() => setShowEditModal(false)} disabled={editLoading}>
-                              Annuler
-                            </button>
+                          <input
+                            type="file"
+                            name="image"
+                            accept="image/*"
+                            onChange={handleEditImage}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-700 bg-gray-50"
+                          />
+                        </div>
+                        {(editImages.length > 0 || editNewImages.length > 0) && (
+                          <div className="flex flex-wrap gap-4 mt-2">
+                            {editImages.map((img, idx) => (
+                              <div key={img.id} className={`bg-white rounded-lg shadow p-3 flex flex-col items-center relative w-36 ${img.toDelete ? 'opacity-40' : ''}`}>
+                                <button type="button" className="absolute top-1 right-1 text-red-500" onClick={() => handleEditImageDelete(idx)} title="Supprimer">
+                                  {img.toDelete ? '↺' : '×'}
+                                </button>
+                                <img src={`http://localhost/estilo/public${img.image_path}`} alt="img" className="w-24 h-24 object-contain rounded border border-gray-200 mb-2" />
+                                <label className="text-xs text-gray-500 mb-1">Couleur</label>
+                                <input type="color" value={img.color || '#cccccc'} onChange={e => handleEditImageColor(idx, e.target.value)} className="w-8 h-8 mb-1" />
+                                <label className="flex items-center gap-1 text-xs">
+                                  <input type="radio" checked={!!img.is_main} onChange={() => handleEditImageMain(idx)} disabled={img.toDelete} />
+                                  Image principale
+                                </label>
+                              </div>
+                            ))}
+                            {editNewImages.map((img, idx) => (
+                              <div key={idx} className="bg-white rounded-lg shadow p-3 flex flex-col items-center relative w-36">
+                                <button type="button" className="absolute top-1 right-1 text-red-500" onClick={() => handleEditRemoveNewImage(idx)} title="Supprimer">
+                                  ×
+                                </button>
+                                <img src={URL.createObjectURL(img)} alt="preview" className="w-24 h-24 object-contain rounded border border-gray-200 mb-2" />
+                                <label className="text-xs text-gray-500 mb-1">Couleur</label>
+                                <input type="color" value={editNewColors[idx] || '#cccccc'} onChange={e => handleEditNewImageColor(idx, e.target.value)} className="w-8 h-8 mb-1" />
+                                <label className="flex items-center gap-1 text-xs">
+                                  <input type="radio" checked={editNewIsMain.includes(idx)} onChange={() => handleEditNewImageMain(idx)} />
+                                  Image principale
+                                </label>
+                              </div>
+                            ))}
+                            {/* Carte d'ajout toujours visible */}
+                            <label className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg w-36 h-36 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50">
+                              <span className="text-3xl text-blue-400">+</span>
+                              <span className="text-xs text-gray-500">Ajouter une image</span>
+                              <input type="file" accept="image/*" multiple className="hidden" onChange={handleEditAddImages} />
+                            </label>
                           </div>
-                          {editError && <div className="bg-red-100 text-red-700 px-4 py-2 rounded text-center text-sm font-medium animate-shake mt-2">{editError}</div>}
-                        </form>
                         )}
-                      </div>
-                    </div>
-                  )}
+                        <div className="flex gap-3 justify-end mt-4">
+                          <button type="submit" className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60" disabled={editLoading}>
+                            {editLoading ? 'Enregistrement...' : 'Enregistrer'}
+                          </button>
+                          <button type="button" className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition" onClick={() => setShowEditModal(false)} disabled={editLoading}>
+                            Annuler
+                          </button>
+                        </div>
+                        {editError && <div className="bg-red-100 text-red-700 px-4 py-2 rounded text-center text-sm font-medium animate-shake mt-2">{editError}</div>}
+                      </form>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <div className="products-pagination justify-center">
@@ -503,6 +528,229 @@ const Products = () => {
         </main>
         <AdminFooter />
       </div>
+
+      {/* Modal pour la gestion des tailles */}
+      {showSizeModal && (
+        <SimpleModal title="Gérer les tailles" onClose={() => setShowSizeModal(false)}>
+          <SizeManager />
+        </SimpleModal>
+      )}
+
+      {/* Modal pour la gestion des catégories */}
+      {showCategoryModal && (
+        <SimpleModal title="Gérer les catégories" onClose={() => setShowCategoryModal(false)}>
+          <CategoryManager />
+        </SimpleModal>
+      )}
+    </div>
+  );
+};
+
+// Composant Modal réutilisable
+const SimpleModal = ({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) => (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
+      <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">×</button>
+      <h3 className="text-lg font-bold mb-4 text-gray-700">{title}</h3>
+      {children}
+    </div>
+  </div>
+);
+
+// Composant pour gérer les tailles
+const SizeManager = () => {
+  const [sizes, setSizes] = useState<{id: number; name: string}[]>([]);
+  const [newSize, setNewSize] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchSizes();
+  }, []);
+
+  const fetchSizes = () => {
+    setLoading(true);
+    fetch('http://localhost/estilo/api/get_sizes.php')
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur lors du chargement des tailles');
+        return res.json();
+      })
+      .then(data => setSizes(data))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  const addSize = () => {
+    if (!newSize.trim()) return;
+    
+    fetch('http://localhost/estilo/api/add_size.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newSize })
+    })
+    .then(res => res.json())
+    .then(data => {
+      setSizes(prev => [...prev, data]);
+      setNewSize('');
+    })
+    .catch(() => setError('Erreur lors de l\'ajout de la taille'));
+  };
+
+  const deleteSize = (id: number) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette taille ?')) return;
+    
+    fetch('http://localhost/estilo/api/delete_size.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    .then(() => {
+      setSizes(prev => prev.filter(s => s.id !== id));
+    })
+    .catch(() => setError('Erreur lors de la suppression'));
+  };
+
+  return (
+    <div>
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          value={newSize}
+          onChange={e => setNewSize(e.target.value)}
+          placeholder="Nom de la taille"
+          className="border px-3 py-2 rounded w-full"
+          onKeyPress={e => e.key === 'Enter' && addSize()}
+        />
+        <button 
+          onClick={addSize}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-1 whitespace-nowrap"
+        >
+          <Plus size={16} />
+          Ajouter
+        </button>
+      </div>
+      
+      {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+      
+      {loading ? (
+        <div>Chargement des tailles...</div>
+      ) : sizes.length === 0 ? (
+        <div className="text-gray-500 text-center py-4">Aucune taille disponible</div>
+      ) : (
+        <ul className="space-y-2 max-h-60 overflow-y-auto">
+          {sizes.map(size => (
+            <li key={size.id} className="flex justify-between items-center border-b pb-2">
+              <span>{size.name}</span>
+              <button 
+                onClick={() => deleteSize(size.id)}
+                className="text-red-500 hover:text-red-700 p-1"
+                title="Supprimer"
+              >
+                <Trash size={16} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+// Composant pour gérer les catégories
+const CategoryManager = () => {
+  const [categories, setCategories] = useState<{id: number; name: string}[]>([]);
+  const [newCategory, setNewCategory] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = () => {
+    setLoading(true);
+    fetch('http://localhost/estilo/api/get_categories.php')
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur lors du chargement des catégories');
+        return res.json();
+      })
+      .then(data => setCategories(data))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  const addCategory = () => {
+    if (!newCategory.trim()) return;
+    
+    fetch('http://localhost/estilo/api/add_category.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newCategory })
+    })
+    .then(res => res.json())
+    .then(data => {
+      setCategories(prev => [...prev, data]);
+      setNewCategory('');
+    })
+    .catch(() => setError('Erreur lors de l\'ajout de la catégorie'));
+  };
+
+  const deleteCategory = (id: number) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return;
+    
+    fetch('http://localhost/estilo/api/delete_category.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    .then(() => {
+      setCategories(prev => prev.filter(c => c.id !== id));
+    })
+    .catch(() => setError('Erreur lors de la suppression'));
+  };
+
+  return (
+    <div>
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          value={newCategory}
+          onChange={e => setNewCategory(e.target.value)}
+          placeholder="Nom de la catégorie"
+          className="border px-3 py-2 rounded w-full"
+          onKeyPress={e => e.key === 'Enter' && addCategory()}
+        />
+        <button 
+          onClick={addCategory}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center gap-1 whitespace-nowrap"
+        >
+          <Plus size={16} />
+          Ajouter
+        </button>
+      </div>
+      
+      {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+      
+      {loading ? (
+        <div>Chargement des catégories...</div>
+      ) : categories.length === 0 ? (
+        <div className="text-gray-500 text-center py-4">Aucune catégorie disponible</div>
+      ) : (
+        <ul className="space-y-2 max-h-60 overflow-y-auto">
+          {categories.map(category => (
+            <li key={category.id} className="flex justify-between items-center border-b pb-2">
+              <span>{category.name}</span>
+              <button 
+                onClick={() => deleteCategory(category.id)}
+                className="text-red-500 hover:text-red-700 p-1"
+                title="Supprimer"
+              >
+                <Trash size={16} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

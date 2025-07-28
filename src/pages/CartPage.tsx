@@ -20,7 +20,10 @@ const CartPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
+      <div
+        className="max-w-7xl mx-auto px-4 py-12 text-center"
+        style={{ paddingTop: '15%', paddingBottom: '15%' }}
+      >
         <h1 className="text-3xl font-bold mb-6">Votre Panier est Vide</h1>
         <p className="text-gray-600 mb-8">
           Commencez à ajouter des articles à votre panier
@@ -36,7 +39,9 @@ const CartPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-12"
+    style={{ paddingTop: '5%', paddingBottom: '10%' }}
+    >
       <h1 className="text-3xl font-bold mb-8">Votre Panier</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
