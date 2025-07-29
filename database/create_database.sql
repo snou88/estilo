@@ -102,10 +102,7 @@ CREATE TABLE sizes (
     name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE category_sizes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    category_id INT NOT NULL,
-    size_id INT NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-    FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE CASCADE
-);
+ALTER TABLE sizes
+ADD COLUMN category_id INT,
+ADD CONSTRAINT fk_category
+FOREIGN KEY (category_id) REFERENCES categories(id);
