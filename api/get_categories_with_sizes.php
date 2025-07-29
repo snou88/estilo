@@ -12,8 +12,7 @@ try {
         SELECT 
             c.id AS category_id, c.name AS category_name, s.id AS size_id, s.name AS size_name
         FROM categories c
-        LEFT JOIN category_sizes cs ON cs.category_id = c.id
-        LEFT JOIN sizes s ON s.id = cs.size_id
+        LEFT JOIN sizes s ON s.category_id = c.id
         ORDER BY c.id, s.id
     ");
 
