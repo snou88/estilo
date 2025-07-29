@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Package, DollarSign, BarChart, TrendingUp } from 'lucide-react';
-import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
@@ -173,7 +172,6 @@ const Statistics = () => {
   if (loading) {
     return (
       <div className="admin-container">
-        <AdminSidebar />
         <div className="admin-content">
           <AdminHeader />
           <main className="flex-1 flex items-center justify-center">
@@ -187,7 +185,6 @@ const Statistics = () => {
 
   return (
     <div className="admin-container">
-      <AdminSidebar />
       <div className="admin-content">
         <AdminHeader />
         <main className="flex-1 p-8">

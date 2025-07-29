@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
@@ -7,7 +6,6 @@ import './ProductsAdmin.css';
 import model from '../../assets/images/products/model.png';
 import { Edit, Trash, Plus } from 'lucide-react';
 import AddProductModal from './AddProductModal';
-import { useEffect as UseEffect, useState as UseState } from 'react';
 import CategorySizeManager from './categorie-and-size.tsx';
 
 const ITEMS_PER_PAGE = 6;
@@ -290,10 +288,11 @@ const Products = () => {
 
   return (
     <div className="admin-layout">
-      <AdminSidebar />
       <div className="admin-main">
         <AdminHeader />
         <main className={`admin-content products-fadein${animate ? ' show' : ''}`}>
+          
+        <CategorySizeManager />
           <div className="flex justify-between items-center mb-6">
             <h2 className="admin-dashboard-title">Gestion des produits</h2>
           </div>
@@ -305,7 +304,6 @@ const Products = () => {
               onChange={e => { setPage(1); setFilter(e.target.value); }}
               className="products-filter-input"
             />
-            <CategorySizeManager />
           </div>
           {loading ? (
             <div>Chargement...</div>

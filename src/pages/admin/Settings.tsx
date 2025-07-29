@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { UserPlus, Trash2, ShieldCheck, Loader2 } from 'lucide-react';
-import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
@@ -157,7 +156,6 @@ const Settings = () => {
 
   return (
     <div className="admin-container">
-      <AdminSidebar />
       <div className="admin-content">
         <AdminHeader />
         <main className="flex-1 flex flex-col p-8">

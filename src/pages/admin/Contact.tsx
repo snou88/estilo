@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import { Trash, Mail } from 'lucide-react';
@@ -125,7 +124,6 @@ const Contact = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <AdminSidebar />
       <div className="flex-1 flex flex-col min-h-screen">
         <AdminHeader />
         <main className="flex-1 p-6 md:p-20">

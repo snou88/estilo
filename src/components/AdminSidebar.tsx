@@ -48,9 +48,7 @@ const AdminSidebar: React.FC = () => {
           <X size={24} />
         </button>
 
-        <div className="admin-sidebar-logo">
-          <img src="/estilo.svg" alt="Estilo Admin" />
-        </div>
+        
 
         <nav className="admin-sidebar-nav">
           {links.map(link => (

@@ -32,14 +32,12 @@ body {
 .admin-layout {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
 }
 
 .admin-main {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  padding-top: 80px; /* Hauteur du header */
+  flex-direction: column; /* Hauteur du header */
 }
 
 .admin-content {

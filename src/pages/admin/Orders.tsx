@@ -1,5 +1,4 @@
 import React from 'react';
-import AdminSidebar from '../../components/AdminSidebar';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
@@ -7,7 +6,6 @@ import './AdminSection.css';
 const Orders = () => {
   return (
     <div className="admin-layout">
-      <AdminSidebar />
       <div className="admin-main">
         <AdminHeader />
         <main className="admin-content">
