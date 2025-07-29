@@ -8,6 +8,7 @@ import model from '../../assets/images/products/model.png';
 import { Edit, Trash, Plus } from 'lucide-react';
 import AddProductModal from './AddProductModal';
 import { useEffect as UseEffect, useState as UseState } from 'react';
+import CategorySizeManager from './categorie-and-size.tsx';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -304,26 +305,7 @@ const Products = () => {
               onChange={e => { setPage(1); setFilter(e.target.value); }}
               className="products-filter-input"
             />
-            <div className="flex gap-4 ml-4">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-700 font-bold">Taille</span>
-                <button
-                  onClick={() => setShowSizeModal(true)}
-                  className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-sm"
-                >
-                  + Ajouter
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-700 font-bold">Catégorie</span>
-                <button
-                  onClick={() => setShowCategoryModal(true)}
-                  className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-sm"
-                >
-                  + Ajouter
-                </button>
-              </div>
-            </div>
+            <CategorySizeManager />
           </div>
           {loading ? (
             <div>Chargement...</div>
