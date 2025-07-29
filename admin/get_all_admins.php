@@ -4,10 +4,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Set CORS headers
-header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -48,7 +49,7 @@ try {
         try {
             $pdo->exec("CREATE TABLE IF NOT EXISTS `admins` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
-                `username` varchar(100) NOT NULL,
+                `full_name` varchar(100) NOT NULL,
                 `email` varchar(100) NOT NULL,
                 `password` varchar(255) NOT NULL,
                 `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -59,7 +60,7 @@ try {
             
             // Insert default admin if table was just created
             $defaultPass = password_hash('admin123', PASSWORD_DEFAULT);
-            $pdo->exec("INSERT INTO `admins` (`username`, `email`, `password`) 
+            $pdo->exec("INSERT INTO `admins` (`full_name`, `email`, `password`) 
                       VALUES ('admin', 'admin@estilo.com', '$defaultPass')");
                       
         } catch (PDOException $e) {
@@ -67,8 +68,8 @@ try {
         }
     }
     
-    // Fetch all admins (using username instead of name, and excluding password)
-    $stmt = $pdo->query('SELECT id, username, email, created_at FROM admins ORDER BY created_at DESC');
+    // Fetch all admins (using full_name instead of name, and excluding password)
+    $stmt = $pdo->query('SELECT id, full_name, email, created_at FROM admins ORDER BY created_at DESC');
     $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Add a flag for the main admin (id=1)

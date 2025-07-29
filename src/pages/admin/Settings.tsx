@@ -6,7 +6,7 @@ import './AdminSection.css';
 
 interface Admin {
   id: number;
-  username: string;
+  full_name: string;
   email: string;
   created_at: string;
   is_main_admin?: boolean;
@@ -17,7 +17,7 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addForm, setAddForm] = useState({ 
-    username: '', 
+    full_name: '', 
     email: '', 
     password: ''
   });
@@ -44,8 +44,8 @@ const Settings = () => {
       
       const data = await response.json();
       
-      if (data.success && Array.isArray(data.admins)) {
-        setAdmins(data.admins);
+      if (data.success && Array.isArray(data.data.admins)) {
+        setAdmins(data.data.admins);
       } else {
         throw new Error(data.error || 'Format de réponse inattendu du serveur');
       }
@@ -72,7 +72,7 @@ const Settings = () => {
     setAddError('');
     setAddSuccess(false);
     
-    if (!addForm.username || !addForm.email || !addForm.password) {
+    if (!addForm.full_name || !addForm.email || !addForm.password) {
       setAddError('Tous les champs sont obligatoires');
       return;
     }
@@ -92,7 +92,7 @@ const Settings = () => {
       
       if (data.success) {
         setAddSuccess(true);
-        setAddForm({ username: '', email: '', password: '' });
+        setAddForm({ full_name: '', email: '', password: '' });
         await fetchAdmins(); // Refresh the list
         
         setTimeout(() => {
@@ -208,7 +208,7 @@ const Settings = () => {
                         <td className="py-3 px-4 text-center text-gray-700 font-semibold">{admin.id}</td>
                         <td className="py-3 px-4 text-center text-gray-800 font-medium flex items-center gap-2 justify-center">
                           {admin.is_main_admin && <ShieldCheck size={18} className="text-blue-500" aria-label="Administrateur principal" />} 
-                          {admin.username}
+                          {admin.full_name}
                         </td>
                         <td className="py-3 px-4 text-center text-blue-700">{admin.email}</td>
                         <td className="py-3 px-4 text-center text-gray-500">
@@ -272,8 +272,8 @@ const Settings = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur</label>
                   <input
                     type="text"
-                    name="username"
-                    value={addForm.username}
+                    name="full_name"
+                    value={addForm.full_name}
                     onChange={handleAddInput}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Nom d'utilisateur"
@@ -315,7 +315,7 @@ const Settings = () => {
                   <button
                     type="submit"
                     className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-                    disabled={!addForm.username || !addForm.email || !addForm.password}
+                    disabled={!addForm.full_name || !addForm.email || !addForm.password}
                   >
                     {addSuccess ? (
                       <>
