@@ -30,8 +30,8 @@ try {
     // Validation des données requises
     $requiredFields = [
         'customer_name', 'customer_phone', 
-        'shipping_address', 'shipping_city', 'shipping_zip', 
-        'shipping_price', 'total_amount', 'items'
+        'shipping_address', 'shipping_city', 'shipping_zip', 'wilaya_id',
+        'items'
     ];
 
     foreach ($requiredFields as $field) {
@@ -42,12 +42,16 @@ try {
         }
     }
 
-    // Validation du prix de livraison et du montant total
-    if (!is_numeric($input['shipping_price']) || !is_numeric($input['total_amount'])) {
+    // Récupérer le prix de livraison depuis la table wilayas
+    $wilayaStmt = $pdo->prepare('SELECT shipping_price, name FROM wilayas WHERE id = ?');
+    $wilayaStmt->execute([$input['wilaya_id']]);
+    $wilaya = $wilayaStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$wilaya) {
         http_response_code(400);
-        echo json_encode(['error' => 'Les montants doivent être numériques']);
+        echo json_encode(['error' => 'Wilaya invalide']);
         exit;
     }
+    $shipping_price = (float)$wilaya['shipping_price'];
 
     // Validation des items
     if (!is_array($input['items']) || empty($input['items'])) {
@@ -64,14 +68,20 @@ try {
         $orderStmt = $pdo->prepare("
             INSERT INTO orders (
                 customer_name, customer_phone, 
-                shipping_address, shipping_city, shipping_zip, 
-                shipping_price, total_amount, status
+                shipping_address, shipping_city, shipping_zip, wilaya_id,
+                total_amount, status
             ) VALUES (
                 :customer_name, :customer_phone,
-                :shipping_address, :shipping_city, :shipping_zip,
-                :shipping_price, :total_amount, 'pending'
+                :shipping_address, :shipping_city, :shipping_zip, :wilaya_id,
+                :total_amount, 'pending'
             )
         ");
+
+        $total_amount = 0;
+        foreach ($input['items'] as $item) {
+            $total_amount += $item['unit_price'] * $item['quantity'];
+        }
+        $total_amount += $shipping_price;
 
         $orderStmt->execute([
             ':customer_name' => $input['customer_name'],
@@ -79,8 +89,8 @@ try {
             ':shipping_address' => $input['shipping_address'],
             ':shipping_city' => $input['shipping_city'],
             ':shipping_zip' => $input['shipping_zip'],
-            ':shipping_price' => $input['shipping_price'],
-            ':total_amount' => $input['total_amount']
+            ':wilaya_id' => $input['wilaya_id'],
+            ':total_amount' => $total_amount
         ]);
 
         $orderId = $pdo->lastInsertId();
@@ -88,9 +98,9 @@ try {
         // Insérer les items de commande
         $itemStmt = $pdo->prepare("
             INSERT INTO order_items (
-                order_id, product_id, quantity, unit_price
+                order_id, product_id, size, quantity, unit_price
             ) VALUES (
-                :order_id, :product_id, :quantity, :unit_price
+                :order_id, :product_id, :size, :quantity, :unit_price
             )
         ");
 
@@ -98,10 +108,10 @@ try {
             if (!isset($item['product_id']) || !isset($item['quantity']) || !isset($item['unit_price'])) {
                 throw new Exception('Données d\'article incomplètes');
             }
-
             $itemStmt->execute([
                 ':order_id' => $orderId,
                 ':product_id' => $item['product_id'],
+                ':size' => isset($item['size']) ? $item['size'] : null,
                 ':quantity' => $item['quantity'],
                 ':unit_price' => $item['unit_price']
             ]);

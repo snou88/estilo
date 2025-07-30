@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Truck, Shield, RefreshCw, Star, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -24,15 +24,6 @@ type ApiProduct = {
   badges: string[];
 };
 
-const wilayas = [
-  'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Batna', 'Béjaïa', 'Biskra', 'Béchar', 'Blida', 'Bouira',
-  'Tamanrasset', 'Tébessa', 'Tlemcen', 'Tiaret', 'Tizi Ouzou', 'Alger', 'Djelfa', 'Jijel', 'Sétif', 'Saïda',
-  'Skikda', 'Sidi Bel Abbès', 'Annaba', 'Guelma', 'Constantine', 'Médéa', 'Mostaganem', 'M’Sila', 'Mascara', 'Ouargla',
-  'Oran', 'El Bayadh', 'Illizi', 'Bordj Bou Arreridj', 'Boumerdès', 'El Tarf', 'Tindouf', 'Tissemsilt', 'El Oued', 'Khenchela',
-  'Souk Ahras', 'Tipaza', 'Mila', 'Aïn Defla', 'Naâma', 'Aïn Témouchent', 'Ghardaïa', 'Relizane', 'Timimoun', 'Bordj Badji Mokhtar',
-  'Ouled Djellal', 'Béni Abbès', 'In Salah', 'In Guezzam', 'Touggourt', 'Djanet', 'El M’Ghair', 'El Meniaa'
-];
-
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
@@ -43,16 +34,14 @@ export default function ProductDetail() {
   const [size, setSize] = useState<string>('M');
   const [color, setColor] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
-  const [wilaya, setWilaya] = useState<string>(wilayas[0]);
+  // const [wilaya, setWilaya] = useState<string>(wilayas[0]);
 
   // Track filtered images and current slide index
   const [filteredImages, setFilteredImages] = useState<Image[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  // Compute delivery and total
-  const getDeliveryPrice = () =>
-    (product?.deliveryBase ?? 0) + (wilayas.indexOf(wilaya) % 5) * 200;
-  const total = (product?.price ?? 0) * quantity + getDeliveryPrice();
+  // Compute total
+  const total = (product?.price ?? 0) * quantity;
 
   // Fetch product data
   useEffect(() => {
@@ -106,21 +95,6 @@ export default function ProductDetail() {
                 className={`w-full h-full object-cover transition-opacity duration-500 absolute inset-0 ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
               />
             ))}
-
-            {/* Left arrow */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-1 hover:bg-opacity-100"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </button>
-            {/* Right arrow */}
-            <button
-              onClick={nextSlide}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-1 hover:bg-opacity-100"
-            >
-              <ArrowRight className="w-6 h-6" />
-            </button>
           </div>
           <div className="flex gap-3 mt-2">
             {product.colors.map(c => (
@@ -172,21 +146,17 @@ export default function ProductDetail() {
           </div>
 
           {/* Wilaya dropdown */}
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <span className="font-medium">Wilaya :</span>
             <select value={wilaya} onChange={e => setWilaya(e.target.value)} className="ml-2 border rounded px-2 py-1">
               {wilayas.map(w => <option key={w} value={w}>{w}</option>)}
             </select>
-          </div>
+          </div> */}
 
           {/* Pricing */}
           <div className="flex items-end gap-4 mb-2">
             <span className="text-2xl font-bold text-blue-700">{product.price} DA</span>
             <span className="text-lg text-gray-400 line-through">{product.oldPrice} DA</span>
-          </div>
-          <div className="mb-2">
-            <span className="font-medium">Livraison :</span>
-            <span className="ml-2 text-blue-600 font-bold">{getDeliveryPrice()} DA</span>
           </div>
           <div className="mb-6 text-2xl font-extrabold text-green-600 border-t pt-4">
             Total à payer : {total} DA

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import { 
@@ -7,7 +7,6 @@ import {
   CheckCircle, 
   XCircle, 
   Truck, 
-  Eye, 
   ChevronDown, 
   ChevronUp,
   RefreshCw,
@@ -22,6 +21,7 @@ interface OrderItem {
   quantity: number;
   unit_price: number;
   total_price: number;
+  size?: string; // <-- Ajout taille
 }
 
 interface Order {
@@ -31,6 +31,9 @@ interface Order {
   shipping_address: string;
   shipping_city: string;
   shipping_zip: string;
+  wilaya_id: number;
+  wilaya_name: string;
+  wilaya_shipping_price: number;
   shipping_price: number;
   total_amount: number;
   status: 'pending' | 'accepted' | 'cancelled' | 'delivered';
@@ -351,6 +354,9 @@ const Orders = () => {
                                   <p><span className="font-medium">Téléphone:</span> {order.customer_phone}</p>
                                   <p><span className="font-medium">Adresse:</span> {order.shipping_address}</p>
                                   <p><span className="font-medium">Ville:</span> {order.shipping_city} {order.shipping_zip}</p>
+                                  {order.wilaya_name && (
+                                    <p><span className="font-medium">Wilaya:</span> {order.wilaya_name}</p>
+                                  )}
                                 </div>
                               </div>
 
@@ -362,6 +368,9 @@ const Orders = () => {
                                     <div key={item.id} className="flex justify-between text-sm">
                                       <span className="text-gray-600">
                                         {item.quantity}x {item.product_name}
+                                        {item.size && (
+                                          <span className="ml-2 text-xs text-blue-700 font-semibold">[{item.size}]</span>
+                                        )}
                                       </span>
                                       <span className="font-medium">
                                         {formatPrice(item.total_price)}
@@ -378,7 +387,7 @@ const Orders = () => {
                                     <div className="flex justify-between text-sm">
                                       <span className="text-gray-600">Livraison</span>
                                       <span className="font-medium">
-                                        {formatPrice(order.shipping_price)}
+                                        {formatPrice(order.wilaya_shipping_price)}
                                       </span>
                                     </div>
                                     <div className="flex justify-between text-sm font-bold">

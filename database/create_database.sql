@@ -62,6 +62,11 @@ CREATE TABLE orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+ALTER TABLE orders DROP COLUMN shipping_wilaya;
+ALTER TABLE orders ADD COLUMN wilaya_id INT NOT NULL AFTER shipping_zip;
+ALTER TABLE orders ADD CONSTRAINT fk_wilaya FOREIGN KEY (wilaya_id) REFERENCES wilayas(id);
+
+
 -- Table des items de commande
 CREATE TABLE order_items (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -72,6 +77,8 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
+
+ALTER TABLE order_items ADD COLUMN size VARCHAR(20) DEFAULT NULL AFTER product_id;
 
 -- Table des avis
 CREATE TABLE reviews (
@@ -106,3 +113,69 @@ ALTER TABLE sizes
 ADD COLUMN category_id INT,
 ADD CONSTRAINT fk_category
 FOREIGN KEY (category_id) REFERENCES categories(id);
+
+CREATE TABLE wilayas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    shipping_price DECIMAL(10,2) NOT NULL
+);
+
+INSERT INTO wilayas (name, shipping_price) VALUES
+('Adrar', 700.00),
+('Chlef', 700.00),
+('Laghouat', 700.00),
+('Oum El Bouaghi', 700.00),
+('Batna', 700.00),
+('Béjaïa', 700.00),
+('Biskra', 700.00),
+('Béchar', 700.00),
+('Blida', 600.00),
+('Bouira', 600.00),
+('Tamanrasset', 800.00),
+('Tébessa', 700.00),
+('Tlemcen', 700.00),
+('Tiaret', 700.00),
+('Tizi Ouzou', 600.00),
+('Alger', 500.00),
+('Djelfa', 700.00),
+('Jijel', 700.00),
+('Sétif', 700.00),
+('Saïda', 700.00),
+('Skikda', 700.00),
+('Sidi Bel Abbès', 700.00),
+('Annaba', 700.00),
+('Guelma', 700.00),
+('Constantine', 700.00),
+('Médéa', 600.00),
+('Mostaganem', 700.00),
+('M’Sila', 700.00),
+('Mascara', 700.00),
+('Ouargla', 800.00),
+('Oran', 700.00),
+('El Bayadh', 700.00),
+('Illizi', 800.00),
+('Bordj Bou Arreridj', 700.00),
+('Boumerdès', 600.00),
+('El Tarf', 700.00),
+('Tindouf', 900.00),
+('Tissemsilt', 700.00),
+('El Oued', 800.00),
+('Khenchela', 700.00),
+('Souk Ahras', 700.00),
+('Tipaza', 600.00),
+('Mila', 700.00),
+('Aïn Defla', 700.00),
+('Naâma', 700.00),
+('Aïn Témouchent', 700.00),
+('Ghardaïa', 800.00),
+('Relizane', 700.00),
+('Timimoun', 800.00),
+('Bordj Badji Mokhtar', 900.00),
+('Ouled Djellal', 800.00),
+('Béni Abbès', 800.00),
+('In Salah', 900.00),
+('In Guezzam', 900.00),
+('Touggourt', 800.00),
+('Djanet', 900.00),
+('El M’Ghair', 800.00),
+('El Menia', 800.00);

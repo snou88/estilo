@@ -46,9 +46,14 @@ try {
     }
 
     // Get all available sizes for this product (if you have a sizes table, otherwise mock)
-    // Example: $sizeStmt = $pdo->prepare("SELECT size FROM product_sizes WHERE product_id = :id");
+     $sizeStmt = $pdo->prepare("SELECT name FROM sizes WHERE category_id = :id");
     // For now, let's mock:
-    $sizes = ['S', 'M', 'L', 'XL'];
+    $sizeStmt->execute([':id' => $product['category_id']]);
+    $sizes = $sizeStmt->fetchAll(PDO::FETCH_ASSOC);
+    $sizes = array_map(function($size) {
+        return $size['name'];
+    }, $sizes);
+    
 
     // Get old price if you have a discount system (mock here)
     $oldPrice = $product['price'] + 2000;

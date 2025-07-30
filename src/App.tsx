@@ -33,6 +33,7 @@ import AdminOrders from "./pages/admin/Orders";
 import AdminStatistics from "./pages/admin/Statistics";
 import AdminSettings from "./pages/admin/Settings";
 import Admin from "./pages/admin/Admin";
+import WilayasAdmin from "./pages/admin/WilayasAdmin";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -74,6 +75,7 @@ function App() {
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="contact" element={<AdminContact />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="wilayas" element={<WilayasAdmin />} />
                 <Route path="statistics" element={<AdminStatistics />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>

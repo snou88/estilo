@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useEffect } from 'react';
-import { X, LayoutDashboard, Package, Mail, MessageCircle, BarChart2, Settings } from 'lucide-react';
+import { X, LayoutDashboard, Package, Mail, MessageCircle, BarChart2, Settings, MapPin } from 'lucide-react';
 import './AdminSidebar.css';
 import { useSidebar } from '../contexts/SidebarContext';
 
@@ -9,6 +9,7 @@ const links = [
   { to: '/admin/products', label: 'Produits', icon: <Package size={22} /> },
   { to: '/admin/contact', label: 'Contact', icon: <Mail size={22} /> },
   { to: '/admin/orders', label: 'Orders', icon: <MessageCircle size={22} /> },
+  { to: '/admin/wilayas', label: 'Wilayas', icon: <MapPin size={22} /> },
   { to: '/admin/statistics', label: 'Statistiques', icon: <BarChart2 size={22} /> },
   { to: '/admin/settings', label: 'Paramètres', icon: <Settings size={22} /> },
 ];

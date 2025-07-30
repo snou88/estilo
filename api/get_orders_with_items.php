@@ -22,7 +22,10 @@ try {
             o.shipping_address,
             o.shipping_city,
             o.shipping_zip,
-            o.shipping_price,
+            o.wilaya_id,
+            w.name AS wilaya_name,
+            w.shipping_price AS wilaya_shipping_price,
+            -- o.shipping_price, (supprimé)
             o.total_amount,
             o.status,
             o.created_at,
@@ -32,12 +35,14 @@ try {
                     'id', oi.id,
                     'product_id', oi.product_id,
                     'product_name', p.name,
+                    'size', oi.size,
                     'quantity', oi.quantity,
                     'unit_price', oi.unit_price,
                     'total_price', (oi.quantity * oi.unit_price)
                 )
             ) as items
         FROM orders o
+        LEFT JOIN wilayas w ON o.wilaya_id = w.id
         LEFT JOIN order_items oi ON o.id = oi.order_id
         LEFT JOIN products p ON oi.product_id = p.id
         GROUP BY o.id
@@ -60,7 +65,7 @@ try {
         $order['updated_at'] = date('d/m/Y H:i', strtotime($order['updated_at']));
         
         // Formater les montants
-        $order['shipping_price'] = (float)$order['shipping_price'];
+        // $order['shipping_price'] = (float)$order['shipping_price']; // This line is removed
         $order['total_amount'] = (float)$order['total_amount'];
     }
     

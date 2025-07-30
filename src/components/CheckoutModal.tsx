@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface CheckoutModalProps {
@@ -15,9 +15,10 @@ interface OrderData {
   shipping_address: string;
   shipping_city: string;
   shipping_zip: string;
-  shipping_price: number;
-  total_amount: number;
+  wilaya_id: number;
 }
+
+type Wilaya = { id: number; name: string; shipping_price: number };
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
@@ -32,9 +33,32 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     shipping_address: '',
     shipping_city: '',
     shipping_zip: '',
-    shipping_price: 500, // Prix de livraison par défaut
-    total_amount: subtotal + 500
+    wilaya_id: 0
   });
+  const [wilayas, setWilayas] = useState<Wilaya[]>([]);
+  const [shippingPrice, setShippingPrice] = useState<number>(0);
+  const [total, setTotal] = useState<number>(subtotal);
+
+  useEffect(() => {
+    fetch('http://localhost/estilo/api/get_wilayas.php')
+      .then(res => res.json())
+      .then(data => {
+        setWilayas(data.wilayas);
+        if (data.wilayas.length > 0) {
+          setFormData(f => ({ ...f, wilaya_id: data.wilayas[0].id }));
+          setShippingPrice(data.wilayas[0].shipping_price);
+          setTotal(subtotal + data.wilayas[0].shipping_price);
+        }
+      });
+  }, [isOpen]);
+
+  useEffect(() => {
+    const selected = wilayas.find(w => w.id === formData.wilaya_id);
+    if (selected) {
+      setShippingPrice(selected.shipping_price);
+      setTotal(subtotal + selected.shipping_price);
+    }
+  }, [formData.wilaya_id, wilayas, subtotal]);
 
   const [errors, setErrors] = useState<Record<keyof OrderData, string>>({} as Record<keyof OrderData, string>);
   const [touched, setTouched] = useState<Partial<OrderData>>({});
@@ -56,11 +80,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   };
 
-  const handleInputChange = (name: keyof OrderData, value: string) => {
+  const handleInputChange = (name: keyof OrderData, value: string | number) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     
     if (touched[name]) {
-      const error = validateField(name, value);
+      const error = validateField(name, value as string);
       setErrors(prev => ({ ...prev, [name]: error }));
     }
   };
@@ -88,7 +112,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       return;
     }
 
-    onSubmit(formData);
+    onSubmit({ ...formData }); // shipping_price n'est plus envoyé, seul wilaya_id
   };
 
   const formatPrice = (price: number) => {
@@ -173,6 +197,24 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div>
             <h4 className="text-lg font-medium text-gray-900 mb-4">Adresse de livraison</h4>
             <div className="space-y-4">
+              <div>
+                <label htmlFor="wilaya_id" className="block text-sm font-medium text-gray-700 mb-1">
+                  Wilaya *
+                </label>
+                <select
+                  id="wilaya_id"
+                  value={formData.wilaya_id}
+                  onChange={e => handleInputChange('wilaya_id', Number(e.target.value))}
+                  className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={loading || wilayas.length === 0}
+                >
+                  {wilayas.map(w => (
+                    <option key={w.id} value={w.id}>
+                      {w.name} ({formatPrice(w.shipping_price)})
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label htmlFor="shipping_address" className="block text-sm font-medium text-gray-700 mb-1">
                   Adresse complète *
@@ -259,13 +301,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Livraison</span>
-                <span className="font-medium">{formatPrice(formData.shipping_price)}</span>
+                <span className="font-medium">Livraison :</span>
+                <span className="ml-2 text-blue-600 font-bold">{formatPrice(shippingPrice)}</span>
               </div>
               <div className="border-t border-gray-200 pt-2 mt-2">
                 <div className="flex justify-between">
                   <span className="text-lg font-bold">Total</span>
-                  <span className="text-lg font-bold">{formatPrice(formData.total_amount)}</span>
+                  <span className="text-lg font-bold">{formatPrice(total)}</span>
                 </div>
               </div>
             </div>
