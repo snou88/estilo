@@ -26,7 +26,7 @@ type ApiProduct = {
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
-  const { addToCart } = useCart();
+  const { addToCart, updateQuantity } = useCart();
   const navigate = useNavigate();
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [loading, setLoading] = useState(true);
@@ -145,14 +145,6 @@ export default function ProductDetail() {
             <button onClick={() => setQuantity(q => q + 1)} className="px-2 py-1 bg-gray-200 rounded-r hover:bg-blue-100">+</button>
           </div>
 
-          {/* Wilaya dropdown */}
-          {/* <div className="mb-4">
-            <span className="font-medium">Wilaya :</span>
-            <select value={wilaya} onChange={e => setWilaya(e.target.value)} className="ml-2 border rounded px-2 py-1">
-              {wilayas.map(w => <option key={w} value={w}>{w}</option>)}
-            </select>
-          </div> */}
-
           {/* Pricing */}
           <div className="flex items-end gap-4 mb-2">
             <span className="text-2xl font-bold text-blue-700">{product.price} DA</span>
@@ -174,6 +166,7 @@ export default function ProductDetail() {
                   size: size,
                   image: product.images[0]?.image_path || ''
                 });
+                updateQuantity( product.id,  color,  size, quantity);
                 navigate('/cart');
               }}
               className="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-all mb-2"
@@ -191,6 +184,7 @@ export default function ProductDetail() {
                   size: size,
                   image: product.images[0]?.image_path || ''
                 });
+                updateQuantity( product.id,  color,  size, quantity);
               }}
               className="w-full bg-white border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-50 transition-all"
             >
