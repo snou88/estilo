@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Edit, Trash, Plus, X, Save, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import AdminHeader from '../../components/AdminHeader';
+import AdminFooter from '../../components/AdminFooter';
 
 // Types pour TypeScript
 interface Size {
@@ -339,8 +341,12 @@ const CategorySizeManager = () => {
   }
 
   return (
-    <div className=" bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="admin-layout">
+      <div className="admin-main">
+        <AdminHeader />
+        <main className="admin-content">
+          <div className="bg-gray-50 min-h-screen py-8">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestion des Catégories & Tailles</h1>
@@ -693,8 +699,11 @@ const CategorySizeManager = () => {
               {actionLoading ? 'Suppression...' : 'Supprimer'}
             </button>
           </div>
-        </div>
-      </Modal>
+            </div>
+          </div>
+        </main>
+        <AdminFooter />
+      </div>
     </div>
   );
 };

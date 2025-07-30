@@ -34,6 +34,7 @@ import AdminStatistics from "./pages/admin/Statistics";
 import AdminSettings from "./pages/admin/Settings";
 import Admin from "./pages/admin/Admin";
 import WilayasAdmin from "./pages/admin/WilayasAdmin";
+import CategorySizeManager from "./pages/admin/categorie-and-size";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -73,6 +74,7 @@ function App() {
                 <Route index element={<AdminDashboard />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
+                <Route path="categorie-and-size" element={<CategorySizeManager />} />
                 <Route path="contact" element={<AdminContact />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="wilayas" element={<WilayasAdmin />} />
