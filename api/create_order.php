@@ -98,9 +98,9 @@ try {
         // Insérer les items de commande
         $itemStmt = $pdo->prepare("
             INSERT INTO order_items (
-                order_id, product_id, size, quantity, unit_price
+                order_id, product_id, size, color, quantity, unit_price
             ) VALUES (
-                :order_id, :product_id, :size, :quantity, :unit_price
+                :order_id, :product_id, :size, :color, :quantity, :unit_price
             )
         ");
 
@@ -112,6 +112,7 @@ try {
                 ':order_id' => $orderId,
                 ':product_id' => $item['product_id'],
                 ':size' => isset($item['size']) ? $item['size'] : null,
+                ':color' => isset($item['color']) ? $item['color'] : null,
                 ':quantity' => $item['quantity'],
                 ':unit_price' => $item['unit_price']
             ]);

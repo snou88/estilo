@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
-import { 
-  Package, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  Truck, 
-  ChevronDown, 
+import {
+  Package,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Truck,
+  ChevronDown,
   ChevronUp,
   RefreshCw,
   AlertCircle
@@ -21,7 +21,8 @@ interface OrderItem {
   quantity: number;
   unit_price: number;
   total_price: number;
-  size?: string; // <-- Ajout taille
+  size?: string;
+  color?: string;
 }
 
 interface Order {
@@ -42,6 +43,8 @@ interface Order {
   items: OrderItem[];
 }
 
+const PAGE_SIZE = 3;
+
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +52,7 @@ const Orders = () => {
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
   const [statusLoading, setStatusLoading] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchOrders();
@@ -83,7 +87,7 @@ const Orders = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setOrders(prev => prev.map(order => 
+        setOrders(prev => prev.map(order =>
           order.id === orderId ? { ...order, status: newStatus } : order
         ));
         setSuccessMessage('Statut de la commande mis à jour avec succès');
@@ -153,6 +157,11 @@ const Orders = () => {
   const toggleOrderExpansion = (orderId: number) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
+
+  // Pagination
+  const pageCount = Math.ceil(orders.length / PAGE_SIZE) || 1;
+  const paginatedOrders = orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  useEffect(() => { if (page > pageCount) setPage(pageCount); }, [pageCount]);
 
   if (loading) {
     return (
@@ -288,9 +297,17 @@ const Orders = () => {
                       Aucune commande n'a été passée pour le moment.
                     </p>
                   </div>
+                ) : paginatedOrders.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">Aucune commande</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Aucune commande n'a été passée pour le moment.
+                    </p>
+                  </div>
                 ) : (
                   <ul className="divide-y divide-gray-200">
-                    {orders.map((order) => (
+                    {paginatedOrders.map((order) => (
                       <li key={order.id} className="px-6 py-4">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
@@ -305,7 +322,7 @@ const Orders = () => {
                                   </p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex items-center space-x-4">
                                 <div className="text-right">
                                   <p className="text-sm font-medium text-gray-900">
@@ -315,11 +332,11 @@ const Orders = () => {
                                     {order.items.length} article(s)
                                   </p>
                                 </div>
-                                
+
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                                   {getStatusText(order.status)}
                                 </span>
-                                
+
                                 <div className="flex items-center space-x-2">
                                   <button
                                     onClick={() => toggleOrderExpansion(order.id)}
@@ -334,7 +351,7 @@ const Orders = () => {
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="mt-2 text-sm text-gray-500">
                               <p>Créée le {order.created_at}</p>
                               <p>Téléphone: {order.customer_phone}</p>
@@ -359,17 +376,26 @@ const Orders = () => {
                                   )}
                                 </div>
                               </div>
-
                               {/* Articles de la commande */}
                               <div>
                                 <h4 className="text-sm font-medium text-gray-900 mb-3">Articles commandés</h4>
                                 <div className="space-y-2">
                                   {order.items.map((item) => (
                                     <div key={item.id} className="flex justify-between text-sm">
-                                      <span className="text-gray-600">
-                                        {item.quantity}x {item.product_name}
+                                      <span className="text-gray-600 flex items-center gap-2">
+                                        <span>{item.quantity}x {item.product_name}</span>
                                         {item.size && (
-                                          <span className="ml-2 text-xs text-blue-700 font-semibold">[{item.size}]</span>
+                                          <span className="text-xs text-blue-700 font-semibold bg-blue-50 px-2 py-1 rounded">[{item.size}]</span>
+                                        )}
+                                        {item.color && (
+                                          <div className="flex items-center gap-1">
+                                            <div 
+                                              className="w-4 h-4 rounded border border-gray-300 shadow-sm" 
+                                              style={{ backgroundColor: item.color }}
+                                              title={item.color}
+                                            />
+                                            <span className="text-xs text-gray-500">{item.color}</span>
+                                          </div>
                                         )}
                                       </span>
                                       <span className="font-medium">
@@ -381,7 +407,7 @@ const Orders = () => {
                                     <div className="flex justify-between text-sm">
                                       <span className="text-gray-600">Sous-total</span>
                                       <span className="font-medium">
-                                        {formatPrice(order.total_amount - order.shipping_price)}
+                                        {formatPrice(Number(Number(order.total_amount) - Number(order.wilaya_shipping_price)))}
                                       </span>
                                     </div>
                                     <div className="flex justify-between text-sm">
@@ -404,7 +430,7 @@ const Orders = () => {
                               <div className="text-sm text-gray-500">
                                 Dernière mise à jour: {order.updated_at}
                               </div>
-                              
+
                               <div className="flex items-center space-x-2">
                                 {order.status === 'pending' && (
                                   <>
@@ -424,7 +450,7 @@ const Orders = () => {
                                     </button>
                                   </>
                                 )}
-                                
+
                                 {order.status === 'accepted' && (
                                   <button
                                     onClick={() => updateOrderStatus(order.id, 'delivered')}
@@ -443,6 +469,29 @@ const Orders = () => {
                   </ul>
                 )}
               </div>
+              
+              {/* Pagination */}
+              {orders.length > PAGE_SIZE && (
+                <div className="flex justify-between items-center mt-6 px-6 py-4 bg-white border-t border-gray-200">
+                  <button 
+                    disabled={page <= 1} 
+                    onClick={() => setPage(p => p - 1)} 
+                    className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Précédent
+                  </button>
+                  <span className="text-sm text-gray-700">
+                    Page {page} sur {pageCount} ({orders.length} commande{orders.length > 1 ? 's' : ''})
+                  </span>
+                  <button 
+                    disabled={page >= pageCount} 
+                    onClick={() => setPage(p => p + 1)} 
+                    className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Suivant
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </main>

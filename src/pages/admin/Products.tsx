@@ -6,7 +6,6 @@ import './ProductsAdmin.css';
 import model from '../../assets/images/products/model.png';
 import { Edit, Trash, Plus } from 'lucide-react';
 import AddProductModal from './AddProductModal';
-import CategorySizeManager from './categorie-and-size.tsx';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -291,8 +290,6 @@ const Products = () => {
       <div className="admin-main">
         <AdminHeader />
         <main className={`admin-content products-fadein${animate ? ' show' : ''}`}>
-          
-        <CategorySizeManager />
           <div className="flex justify-between items-center mb-6">
             <h2 className="admin-dashboard-title">Gestion des produits</h2>
           </div>

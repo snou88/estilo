@@ -36,6 +36,7 @@ try {
                     'product_id', oi.product_id,
                     'product_name', p.name,
                     'size', oi.size,
+                    'color', oi.color,
                     'quantity', oi.quantity,
                     'unit_price', oi.unit_price,
                     'total_price', (oi.quantity * oi.unit_price)

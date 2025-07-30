@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Package, DollarSign, BarChart, TrendingUp } from 'lucide-react';
+import { ShoppingCart, Package, DollarSign, BarChart, TrendingUp, TrendingDown, Users, Clock } from 'lucide-react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
@@ -45,61 +45,62 @@ interface StatCardProps {
     value: number;
     isUp: boolean;
   };
+  color: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, trend }) => (
-  <div className="stat-card">
-    <div className="stat-icon">
-      {icon}
-    </div>
-    <div className="stat-info">
-      <h3 className="stat-title">{title}</h3>
-      <p className="stat-value">{value}</p>
-      {trend && (
-        <div className={`stat-trend ${trend.isUp ? 'up' : 'down'}`}>
-          <TrendingUp size={14} />
-          <span>{trend.value}% {trend.isUp ? '↑' : '↓'}</span>
-        </div>
-      )}
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, trend, color }) => (
+  <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className="flex items-center justify-between">
+      <div className="flex-1">
+        <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
+        <p className="text-2xl font-bold text-gray-900 mb-2">{value}</p>
+        {trend && (
+          <div className={`flex items-center text-sm ${trend.isUp ? 'text-green-600' : 'text-red-600'}`}>
+            {trend.isUp ? <TrendingUp size={14} className="mr-1" /> : <TrendingDown size={14} className="mr-1" />}
+            <span className="font-medium">{trend.value}%</span>
+            <span className="ml-1">{trend.isUp ? '↑' : '↓'}</span>
+          </div>
+        )}
+      </div>
+      <div className={`p-3 rounded-lg ${color}`}>
+        {icon}
+      </div>
     </div>
   </div>
 );
 
 const Statistics = () => {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [stats, setStats] = useState({
-    totalOrders: 0,
-    totalProducts: 0,
-    monthlyRevenue: 0,
-    totalRevenue: 0,
-    bestSeller: { name: 'Aucun', quantity: 0 }
+    total_orders: 0,
+    total_products: 0,
+    monthly_revenue: 0,
+    total_revenue: 0,
+    monthly_orders: 0,
+    orders_trend: 0,
+    revenue_trend: 0,
+    best_seller: { name: 'Aucun', quantity: 0 },
+    status_distribution: {},
+    chart_data: { labels: [], orders: [], revenue: [] }
   });
 
-  // Sample data - replace with actual API calls
   useEffect(() => {
-    // Simulate API call
     const fetchStats = async () => {
       try {
-        // Replace with actual API calls
-        // const response = await fetch('/api/statistics');
-        // const data = await response.json();
+        setLoading(true);
+        const response = await fetch('http://localhost/estilo/api/get_statistics.php');
+        const data = await response.json();
         
-        // Mock data for demonstration
-        setTimeout(() => {
-          setStats({
-            totalOrders: 1245,
-            totalProducts: 89,
-            monthlyRevenue: 24500,
-            totalRevenue: 189500,
-            bestSeller: {
-              name: 'T-shirt Estilo',
-              quantity: 342
-            }
-          });
-          setLoading(false);
-        }, 1000);
+        if (data.success) {
+          setStats(data.statistics);
+        } else {
+          setError('Erreur lors du chargement des statistiques');
+        }
       } catch (error) {
+        setError('Erreur de connexion');
         console.error('Error fetching statistics:', error);
+      } finally {
         setLoading(false);
       }
     };
@@ -109,32 +110,40 @@ const Statistics = () => {
 
   // Chart data for orders
   const ordersData = {
-    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'],
+    labels: stats.chart_data.labels,
     datasets: [
       {
         label: 'Commandes',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        data: stats.chart_data.orders,
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
         borderColor: 'rgb(59, 130, 246)',
-        borderWidth: 2,
+        borderWidth: 3,
         tension: 0.4,
-        fill: true
+        fill: true,
+        pointBackgroundColor: 'rgb(59, 130, 246)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6
       }
     ]
   };
 
   // Chart data for revenue
   const revenueData = {
-    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'],
+    labels: stats.chart_data.labels,
     datasets: [
       {
         label: 'Revenu (DA)',
-        data: [12000, 15000, 18000, 20000, 19000, 22000, 24500],
+        data: stats.chart_data.revenue,
         borderColor: 'rgb(16, 185, 129)',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        borderWidth: 2,
+        borderWidth: 3,
         tension: 0.4,
-        fill: true
+        fill: true,
+        pointBackgroundColor: 'rgb(16, 185, 129)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6
       }
     ]
   };
@@ -142,18 +151,50 @@ const Statistics = () => {
   // Chart options
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12,
+            weight: 'bold'
+          }
+        }
       },
       title: {
         display: true,
-        text: 'Statistiques des commandes',
+        text: 'Évolution des commandes',
+        font: {
+          size: 16,
+          weight: 'bold'
+        },
+        padding: 20
       },
     },
     scales: {
       y: {
-        beginAtZero: true
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        },
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
+      },
+      x: {
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        },
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
       }
     }
   };
@@ -164,18 +205,35 @@ const Statistics = () => {
       ...chartOptions.plugins,
       title: {
         display: true,
-        text: 'Revenu mensuel (DA)',
+        text: 'Évolution du revenu (DA)',
+        font: {
+          size: 16,
+          weight: 'bold'
+        },
+        padding: 20
       },
     },
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ar-DZ', {
+      style: 'currency',
+      currency: 'DZD'
+    }).format(price);
+  };
+
   if (loading) {
     return (
-      <div className="admin-container">
-        <div className="admin-content">
+      <div className="admin-layout">
+        <div className="admin-main">
           <AdminHeader />
-          <main className="flex-1 flex items-center justify-center">
-            <div className="animate-pulse">Chargement des statistiques...</div>
+          <main className="admin-content">
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Chargement des statistiques...</p>
+              </div>
+            </div>
           </main>
           <AdminFooter />
         </div>
@@ -184,63 +242,109 @@ const Statistics = () => {
   }
 
   return (
-    <div className="admin-container">
-      <div className="admin-content">
+    <div className="admin-layout">
+      <div className="admin-main">
         <AdminHeader />
-        <main className="flex-1 p-8">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Tableau de bord</h1>
-            
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard 
-                title="Commandes totales" 
-                value={stats.totalOrders.toLocaleString()} 
-                icon={<ShoppingCart size={24} className="text-blue-500" />}
-                trend={{ value: 12.5, isUp: true }}
-              />
-              
-              <StatCard 
-                title="Produits" 
-                value={stats.totalProducts} 
-                icon={<Package size={24} className="text-green-500" />}
-              />
-              
-              <StatCard 
-                title="Revenu ce mois" 
-                value={`${stats.monthlyRevenue.toLocaleString()} DA`} 
-                icon={<DollarSign size={24} className="text-yellow-500" />}
-                trend={{ value: 8.3, isUp: true }}
-              />
-              
-              <StatCard 
-                title="Revenu total" 
-                value={`${stats.totalRevenue.toLocaleString()} DA`} 
-                icon={<BarChart size={24} className="text-purple-500" />}
-              />
-            </div>
-            
-            {/* Best Seller */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Produit le plus vendu</h2>
-              <div className="flex items-center">
-                <div className="bg-blue-100 p-3 rounded-lg mr-4">
-                  <Package size={32} className="text-blue-500" />
+        <main className="admin-content">
+          <div className="bg-gray-50 min-h-screen py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {/* Header */}
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Tableau de bord</h1>
+                <p className="text-gray-600">Vue d'ensemble de votre activité commerciale</p>
+              </div>
+
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm font-medium text-red-800">{error}</p>
                 </div>
-                <div>
-                  <h3 className="font-medium text-gray-800">{stats.bestSeller.name}</h3>
-                  <p className="text-sm text-gray-500">{stats.bestSeller.quantity} ventes</p>
+              )}
+              
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard 
+                  title="Commandes totales" 
+                  value={stats.total_orders.toLocaleString()} 
+                  icon={<ShoppingCart size={24} className="text-white" />}
+                  trend={{ value: stats.orders_trend, isUp: stats.orders_trend >= 0 }}
+                  color="bg-blue-500"
+                />
+                
+                <StatCard 
+                  title="Produits" 
+                  value={stats.total_products} 
+                  icon={<Package size={24} className="text-white" />}
+                  color="bg-green-500"
+                />
+                
+                <StatCard 
+                  title="Revenu ce mois" 
+                  value={formatPrice(stats.monthly_revenue)} 
+                  icon={<DollarSign size={24} className="text-white" />}
+                  trend={{ value: stats.revenue_trend, isUp: stats.revenue_trend >= 0 }}
+                  color="bg-yellow-500"
+                />
+                
+                <StatCard 
+                  title="Revenu total" 
+                  value={formatPrice(stats.total_revenue)} 
+                  icon={<BarChart size={24} className="text-white" />}
+                  color="bg-purple-500"
+                />
+              </div>
+              
+              {/* Best Seller & Status Distribution */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Best Seller */}
+                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <Package className="w-5 h-5 mr-2 text-blue-500" />
+                    Produit le plus vendu
+                  </h2>
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 p-4 rounded-xl mr-4">
+                      <Package size={32} className="text-blue-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800 text-lg">{stats.best_seller.name}</h3>
+                      <p className="text-sm text-gray-500">{stats.best_seller.quantity} unités vendues</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Distribution */}
+                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <Clock className="w-5 h-5 mr-2 text-green-500" />
+                    Répartition des commandes
+                  </h2>
+                  <div className="space-y-3">
+                    {Object.entries(stats.status_distribution).map(([status, count]) => (
+                      <div key={status} className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-600 capitalize">
+                          {status === 'pending' ? 'En attente' : 
+                           status === 'accepted' ? 'Acceptées' :
+                           status === 'delivered' ? 'Livrées' : 'Annulées'}
+                        </span>
+                        <span className="text-sm font-bold text-gray-900">{count}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <Bar options={chartOptions} data={ordersData} />
-              </div>
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <Line options={revenueChartOptions} data={revenueData} />
+              
+              {/* Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                  <div className="h-80">
+                    <Bar options={chartOptions} data={ordersData} />
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                  <div className="h-80">
+                    <Line options={revenueChartOptions} data={revenueData} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

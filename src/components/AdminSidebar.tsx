@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom';
 import { useEffect } from 'react';
-import { X, LayoutDashboard, Package, Mail, MessageCircle, BarChart2, Settings, MapPin } from 'lucide-react';
+import { X, LayoutDashboard, Package, Mail, MessageCircle, BarChart2, Settings, MapPin, Tags } from 'lucide-react';
 import './AdminSidebar.css';
 import { useSidebar } from '../contexts/SidebarContext';
 
 const links = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={22} /> },
   { to: '/admin/products', label: 'Produits', icon: <Package size={22} /> },
+  { to: '/admin/categorie-and-size', label: 'Catégories & Tailles', icon: <Tags size={22} /> },
   { to: '/admin/contact', label: 'Contact', icon: <Mail size={22} /> },
   { to: '/admin/orders', label: 'Orders', icon: <MessageCircle size={22} /> },
   { to: '/admin/wilayas', label: 'Wilayas', icon: <MapPin size={22} /> },

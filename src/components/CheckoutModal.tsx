@@ -47,7 +47,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         if (data.wilayas.length > 0) {
           setFormData(f => ({ ...f, wilaya_id: data.wilayas[0].id }));
           setShippingPrice(data.wilayas[0].shipping_price);
-          setTotal(subtotal + data.wilayas[0].shipping_price);
+          setTotal(Number(subtotal) + Number(data.wilayas[0].shipping_price));
         }
       });
   }, [isOpen]);
@@ -55,8 +55,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   useEffect(() => {
     const selected = wilayas.find(w => w.id === formData.wilaya_id);
     if (selected) {
-      setShippingPrice(selected.shipping_price);
-      setTotal(subtotal + selected.shipping_price);
+      const shipping = Number(selected.shipping_price);
+      setShippingPrice(shipping);
+      setTotal(Number(subtotal) + shipping);
     }
   }, [formData.wilaya_id, wilayas, subtotal]);
 
@@ -82,7 +83,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handleInputChange = (name: keyof OrderData, value: string | number) => {
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (touched[name]) {
       const error = validateField(name, value as string);
       setErrors(prev => ({ ...prev, [name]: error }));
@@ -97,7 +98,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Valider tous les champs
     const newErrors: Record<keyof OrderData, string> = {} as Record<keyof OrderData, string>;
     Object.keys(formData).forEach(key => {
@@ -153,9 +154,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={formData.customer_name}
                   onChange={(e) => handleInputChange('customer_name', e.target.value)}
                   onBlur={() => handleBlur('customer_name')}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.customer_name ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.customer_name ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="Votre nom complet"
                   disabled={loading}
                 />
@@ -177,9 +177,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={formData.customer_phone}
                   onChange={(e) => handleInputChange('customer_phone', e.target.value)}
                   onBlur={() => handleBlur('customer_phone')}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.customer_phone ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.customer_phone ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="+213 6 XX XX XX XX"
                   disabled={loading}
                 />
@@ -225,9 +224,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onChange={(e) => handleInputChange('shipping_address', e.target.value)}
                   onBlur={() => handleBlur('shipping_address')}
                   rows={3}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.shipping_address ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.shipping_address ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="Rue, numéro, quartier..."
                   disabled={loading}
                 />
@@ -250,9 +248,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={formData.shipping_city}
                     onChange={(e) => handleInputChange('shipping_city', e.target.value)}
                     onBlur={() => handleBlur('shipping_city')}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.shipping_city ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.shipping_city ? 'border-red-300' : 'border-gray-300'
+                      }`}
                     placeholder="Cheraga , ouled fayet ..."
                     disabled={loading}
                   />
@@ -274,9 +271,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={formData.shipping_zip}
                     onChange={(e) => handleInputChange('shipping_zip', e.target.value)}
                     onBlur={() => handleBlur('shipping_zip')}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.shipping_zip ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.shipping_zip ? 'border-red-300' : 'border-gray-300'
+                      }`}
                     placeholder="16000"
                     maxLength={5}
                     disabled={loading}

@@ -79,6 +79,7 @@ CREATE TABLE order_items (
 );
 
 ALTER TABLE order_items ADD COLUMN size VARCHAR(20) DEFAULT NULL AFTER product_id;
+ALTER TABLE order_items ADD COLUMN color VARCHAR(50) DEFAULT NULL AFTER size;
 
 -- Table des avis
 CREATE TABLE reviews (

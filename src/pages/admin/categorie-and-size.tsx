@@ -399,7 +399,7 @@ const CategorySizeManager = () => {
         <div className="relative overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 50}%)`, width: `${categories.length * 100}%` }}
+            style={{ transform: `translateX(-${currentIndex * 50}%)`, width: `${categories.length * 50}%` }}
           >
             {categories.map(category => (
               <div key={category.id} className="w-full px-2">

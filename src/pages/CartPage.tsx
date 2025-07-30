@@ -33,7 +33,9 @@ const CartPage = () => {
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: item.quantity,
-          unit_price: item.price
+          unit_price: item.price,
+          size: item.size,
+          color: item.color
         }))
       };
 
