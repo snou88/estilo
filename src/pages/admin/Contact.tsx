@@ -123,7 +123,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen">
       <div className="flex-1 flex flex-col min-h-screen">
         <AdminHeader />
         <main className="flex-1 p-6 md:p-20">
@@ -135,7 +135,7 @@ const Contact = () => {
           ) : messages.length === 0 ? (
             <div className="text-center text-gray-500 py-12">Aucun message de contact trouvé.</div>
           ) : (
-            <div className="w-full flex justify-center pl-[240px]">
+            <div className="w-full flex justify-center">
               <div className="overflow-x-auto w-full max-w-6xl mx-auto">
                 <table className={`w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 ${animate ? 'animate-fadein' : ''}`}>
                   <thead>

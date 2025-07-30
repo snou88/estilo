@@ -7,7 +7,7 @@ export const useCart = () => {
 
   // Charger le panier depuis localStorage au démarrage
   useEffect(() => {
-    const savedCart = localStorage.getItem('estilo-cart');
+    const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       setItems(JSON.parse(savedCart));
     }
@@ -15,7 +15,7 @@ export const useCart = () => {
 
   // Sauvegarder le panier dans localStorage à chaque modification
   useEffect(() => {
-    localStorage.setItem('estilo-cart', JSON.stringify(items));
+    localStorage.setItem('cart', JSON.stringify(items));
   }, [items]);
 
   const addItem = (item: CartItem) => {
