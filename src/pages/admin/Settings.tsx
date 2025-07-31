@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Trash2, ShieldCheck, Loader2 } from 'lucide-react';
+import { UserPlus, Trash2, ShieldCheck, Loader2, ChevronDown, ChevronUp  } from 'lucide-react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
+
+
+
+
 
 interface Admin {
   id: number;
@@ -16,6 +20,8 @@ const Settings = () => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const toggleExpand = (id: number) => setExpandedId(prev => (prev === id ? null : id));
   const [addForm, setAddForm] = useState({ 
     full_name: '', 
     email: '', 
@@ -153,93 +159,187 @@ const Settings = () => {
       minute: '2-digit'
     });
   };
+  
 
   return (
-    <div className="admin-container">
-      <div className="admin-content">
-        <AdminHeader />
-        <main className="flex-1 flex flex-col p-8">
-          <div className="w-full bg-white rounded-2xl shadow-2xl p-8 animate-fadein">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">Gestion des administrateurs</h2>
-              <button
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
-                onClick={() => setShowAddModal(true)}
-              >
-                <UserPlus size={20} /> Ajouter un admin
-              </button>
-            </div>
-            
-            {error && (
-              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                {error}
+      <div className="admin-container">
+        <div className="admin-content flex flex-col min-h-screen">
+          <AdminHeader />
+  
+          <main className="flex-1 flex flex-col p-4 md:p-8">
+            <div className="w-full bg-white rounded-2xl shadow-2xl p-4 md:p-8 animate-fadein space-y-6">
+              {/* Header + Add button */}
+              <div className="grid gap-5 md:flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                  Gestion des administrateurs
+                </h2>
+                <button
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition text-sm md:text-base"
+                  onClick={() => setShowAddModal(true)}
+                >
+                  <UserPlus size={20} /> Ajouter un admin
+                </button>
               </div>
-            )}
-            
-            <div className="overflow-x-auto">
-              <table className="w-full bg-white rounded-xl shadow overflow-hidden">
-                <thead>
-                  <tr className="bg-gray-50 text-gray-700 text-sm">
-                    <th className="py-3 px-4 font-semibold text-center">ID</th>
-                    <th className="py-3 px-4 font-semibold text-center">Nom d'utilisateur</th>
-                    <th className="py-3 px-4 font-semibold text-center">Email</th>
-                    <th className="py-3 px-4 font-semibold text-center">Créé le</th>
-                    <th className="py-3 px-4 font-semibold text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={5} className="py-8 text-center text-gray-500">
-                        <div className="flex justify-center">
-                          <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
-                        </div>
-                      </td>
+  
+              {error && (
+                <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+  
+              {/* DESKTOP TABLE */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full bg-white rounded-xl shadow overflow-hidden">
+                  <thead>
+                    <tr className="bg-gray-50 text-gray-700 text-sm">
+                      <th className="py-3 px-4 font-semibold text-center">ID</th>
+                      <th className="py-3 px-4 font-semibold text-center">Nom</th>
+                      <th className="py-3 px-4 font-semibold text-center">Email</th>
+                      <th className="py-3 px-4 font-semibold text-center">Créé le</th>
+                      <th className="py-3 px-4 font-semibold text-center">Actions</th>
                     </tr>
-                  ) : admins.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-8 text-center text-gray-500">
-                        Aucun administrateur trouvé
-                      </td>
-                    </tr>
-                  ) : (
-                    admins.map((admin) => (
-                      <tr key={admin.id} className="transition-all duration-300 hover:bg-blue-50 group">
-                        <td className="py-3 px-4 text-center text-gray-700 font-semibold">{admin.id}</td>
-                        <td className="py-3 px-4 text-center text-gray-800 font-medium flex items-center gap-2 justify-center">
-                          {admin.is_main_admin && <ShieldCheck size={18} className="text-blue-500" aria-label="Administrateur principal" />} 
-                          {admin.full_name}
-                        </td>
-                        <td className="py-3 px-4 text-center text-blue-700">{admin.email}</td>
-                        <td className="py-3 px-4 text-center text-gray-500">
-                          {formatDate(admin.created_at)}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {!admin.is_main_admin && (
-                            <button
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-400"
-                              onClick={() => handleDelete(admin.id)}
-                              disabled={deletingId === admin.id}
-                            >
-                              {deletingId === admin.id ? (
-                                <Loader2 className="animate-spin" size={16} />
-                              ) : (
-                                <Trash2 size={16} />
-                              )}
-                              <span className="hidden sm:inline">Supprimer</span>
-                            </button>
-                          )}
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center">
+                          <Loader2 className="animate-spin h-8 w-8 text-blue-500 mx-auto" />
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : admins.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-gray-500">
+                          Aucun administrateur trouvé
+                        </td>
+                      </tr>
+                    ) : (
+                      admins.map(admin => (
+                        <tr
+                          key={admin.id}
+                          className="transition-all duration-300 hover:bg-blue-50"
+                        >
+                          <td className="py-3 px-4 text-center font-semibold text-gray-700">
+                            {admin.id}
+                          </td>
+                          <td className="py-3 px-4 text-center flex items-center justify-center gap-2">
+                            {admin.is_main_admin && (
+                              <ShieldCheck
+                                size={18}
+                                className="text-blue-500"
+                                aria-label="Principal"
+                              />
+                            )}
+                            <span className="font-medium text-gray-800">
+                              {admin.full_name}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-center text-blue-700">
+                            {admin.email}
+                          </td>
+                          <td className="py-3 px-4 text-center text-gray-500">
+                            {formatDate(admin.created_at)}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {!admin.is_main_admin && (
+                              <button
+                                onClick={() => handleDelete(admin.id)}
+                                disabled={deletingId === admin.id}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition"
+                              >
+                                {deletingId === admin.id ? (
+                                  <Loader2 className="animate-spin" size={16} />
+                                ) : (
+                                  <Trash2 size={16} />
+                                )}
+                                <span className="hidden sm:inline">Supprimer</span>
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+  
+              {/* MOBILE LIST */}
+              <ul className="block md:hidden space-y-4">
+                {loading ? (
+                  <li className="py-8 text-center">
+                    <Loader2 className="animate-spin h-8 w-8 text-blue-500 mx-auto" />
+                  </li>
+                ) : admins.length === 0 ? (
+                  <li className="py-8 text-center text-gray-500">
+                    Aucun administrateur trouvé
+                  </li>
+                ) : (
+                  admins.map(admin => {
+                    const open = expandedId === admin.id;
+                    return (
+                      <li
+                        key={admin.id}
+                        className="bg-white rounded-xl shadow p-4 transition"
+                      >
+                        <div className=" flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <p className="text-gray-800 font-semibold">
+                              {admin.full_name}{' '}
+                              {admin.is_main_admin && (
+                                <ShieldCheck
+                                  size={16}
+                                  className="inline text-blue-500"
+                                  aria-label="Principal"
+                                />
+                              )}
+                            </p>
+                            <p className="text-blue-600 text-sm underline">
+                              {admin.email}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => toggleExpand(admin.id)}
+                            className="p-2 rounded-full hover:bg-gray-100 transition"
+                            aria-label="Toggle details"
+                          >
+                            {open ? <ChevronUp /> : <ChevronDown />}
+                          </button>
+                        </div>
+  
+                        {open && (
+                          <div className="mt-4 space-y-2 border-t pt-3">
+                            <p className="text-gray-500 text-sm">
+                              <span className="font-semibold">ID :</span> {admin.id}
+                            </p>
+                            <p className="text-gray-500 text-sm">
+                              <span className="font-semibold">Créé le :</span>{' '}
+                              {formatDate(admin.created_at)}
+                            </p>
+                            {!admin.is_main_admin && (
+                              <button
+                                onClick={() => handleDelete(admin.id)}
+                                disabled={deletingId === admin.id}
+                                className="w-full inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition"
+                              >
+                                {deletingId === admin.id ? (
+                                  <Loader2 className="animate-spin" size={16} />
+                                ) : (
+                                  <Trash2 size={16} />
+                                )}
+                                Supprimer
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
             </div>
-          </div>
-        </main>
-        <AdminFooter />
-      </div>
+          </main>
+  
+          <AdminFooter />
+        </div>
 
       {/* Add Admin Modal */}
       {showAddModal && (
