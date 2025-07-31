@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Truck, Shield, RefreshCw, Star, ArrowLeft, ArrowRight } from 'lucide-react';
 
+
 type Image = {
   image_path: string;
   color: string;
@@ -31,7 +32,8 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [size, setSize] = useState<string>('Ce produit n’a pas de tailles disponibles');
+  const [size, setSize] = useState<string>('Standard');
+  const [showPopup, setShowPopup] = useState(false);
   const [color, setColor] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
   // const [wilaya, setWilaya] = useState<string>(wilayas[0]);
@@ -122,22 +124,22 @@ export default function ProductDetail() {
           {/* Size selector */}
           <div className="flex flex-col gap-2 mb-4">
             <span className="font-medium">
-            {product.sizes.length > 0 ? (
-              <div className="flex gap-4">
-                Taille :
-                {product.sizes.map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setSize(s)}
-                    className={`px-3 py-1 rounded border ${size === s ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border-blue-600'}`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            ) : (
-               <> Taille : Standard </>
-            )}</span>
+              {product.sizes.length > 0 ? (
+                <div className="flex gap-4">
+                  Taille :
+                  {product.sizes.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setSize(s)}
+                      className={`px-3 py-1 rounded border ${size === s ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border-blue-600'}`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <> Taille : Standard </>
+              )}</span>
           </div>
 
           {/* Quantity selector */}
@@ -164,7 +166,7 @@ export default function ProductDetail() {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => {
-                if (!product) return;
+                if (!product || size == "Standard" && product.sizes.length > 0) return setShowPopup(true); // Sécurité supplémentaire
                 addToCart({
                   id: product.id,
                   name: product.name,
@@ -176,13 +178,32 @@ export default function ProductDetail() {
                 updateQuantity(product.id, color, size, quantity);
                 navigate('/cart');
               }}
-              className="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-all mb-2"
+              disabled={!size}
+              className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all mb-2 ${size
+                ? 'bg-gradient-to-r from-blue-600 to-green-500 text-white hover:scale-105'
+                : 'bg-gray-400 text-white cursor-not-allowed'
+                }`}
             >
               Commander maintenant
             </button>
+            {/* Popup */}
+            {showPopup && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg text-center">
+                  <h2 className="text-xl font-bold mb-4 text-red-600">Taille non sélectionnée</h2>
+                  <p className="mb-6 text-gray-700">Veuillez sélectionner une taille avant de continuer.</p>
+                  <button
+                    onClick={() => setShowPopup(false)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            )}
             <button
               onClick={() => {
-                if (!product) return;
+                if (!product || size == "Standard" && product.sizes.length > 0) return setShowPopup(true);
                 addToCart({
                   id: product.id,
                   name: product.name,
@@ -193,7 +214,11 @@ export default function ProductDetail() {
                 });
                 updateQuantity(product.id, color, size, quantity);
               }}
-              className="w-full bg-white border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-50 transition-all"
+              disabled={!size}
+              className={`w-full border-2 py-4 rounded-xl font-bold text-lg shadow-md transition-all ${size
+                ? 'border-blue-600 text-blue-600 hover:bg-blue-50 bg-white'
+                : 'border-gray-400 text-gray-400 bg-gray-200 cursor-not-allowed'
+                }`}
             >
               Ajouter au panier
             </button>
