@@ -7,7 +7,7 @@ import './AdminDashboard.css';
 const Dashboard = () => {
   const navigate = useNavigate();
   return (
-    <div className="admin-layout">
+    <div className="admin-layout block">
       <AdminHeader />
       <div className="admin-main">
         <div className="admin-content no-sidebar dashboard-page">
