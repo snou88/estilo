@@ -41,7 +41,7 @@ const AdminSidebar: React.FC = () => {
         />
       )}
 
-      <aside className={`admin-sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+      <aside className={`admin-sidebar absolute md:static ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         <button
           className="md:hidden absolute top-4 right-4 p-1 rounded-full text-gray-500 hover:text-gray-700"
           onClick={closeSidebar}
