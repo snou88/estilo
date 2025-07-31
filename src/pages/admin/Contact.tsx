@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
-import { Trash, Mail } from 'lucide-react';
+import { Trash, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+
 
 // Type pour un message de contact
 type ContactMessage = {
@@ -122,29 +123,50 @@ const Contact = () => {
     }
   };
 
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+
+  const toggleExpand = (id: number) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
+
   return (
     <div className="flex min-h-screen">
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col">
         <AdminHeader />
+
         <main className="flex-1 p-6 md:p-20">
-          <h2 className="text-3xl font-bold mb-8 text-gray-800 text-center">Gestion des contacts</h2>
+          <h2 className="text-3xl font-bold mb-8 text-gray-800 text-center">
+            Gestion des contacts
+          </h2>
+
           {loading ? (
-            <div className="flex justify-center items-center h-40 text-lg text-gray-500 animate-pulse">Chargement...</div>
+            <div className="flex justify-center items-center h-40 text-lg text-gray-500 animate-pulse">
+              Chargement...
+            </div>
           ) : error ? (
-            <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4 shadow">{error}</div>
+            <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4 shadow">
+              {error}
+            </div>
           ) : messages.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">Aucun message de contact trouvé.</div>
+            <div className="text-center text-gray-500 py-12">
+              Aucun message de contact trouvé.
+            </div>
           ) : (
-            <div className="w-full flex justify-center">
-              <div className="overflow-x-auto w-full max-w-6xl mx-auto">
-                <table className={`w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 ${animate ? 'animate-fadein' : ''}`}>
+            <>
+              {/* Desktop/Table */}
+              <div className="hidden md:block overflow-x-auto w-full max-w-6xl mx-auto">
+                <table
+                  className={`w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 ${animate ? 'animate-fadein' : ''
+                    }`}
+                >
                   <thead>
                     <tr className="bg-gray-50 text-gray-700 text-sm">
-                       <th className="py-3 px-4 font-semibold text-center min-w-[120px]">Nom</th>
-                       <th className="py-3 px-4 font-semibold text-center min-w-[180px]">Email</th>
-                       <th className="py-3 px-4 font-semibold text-left min-w-[220px]">Message</th>
-                       <th className="py-3 px-4 font-semibold text-center min-w-[140px]">Date</th>
-                       <th className="py-3 px-4 font-semibold text-center min-w-[140px]">Actions</th>
+                      <th className="py-3 px-4 font-semibold text-center min-w-[120px]">Nom</th>
+                      <th className="py-3 px-4 font-semibold text-center min-w-[180px]">Email</th>
+                      <th className="py-3 px-4 font-semibold text-left min-w-[220px]">Message</th>
+                      <th className="py-3 px-4 font-semibold text-center min-w-[140px]">Date</th>
+                      <th className="py-3 px-4 font-semibold text-center min-w-[140px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -154,11 +176,11 @@ const Contact = () => {
                         className={`transition-all duration-300 hover:bg-blue-50 group ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                         style={{ animationDelay: `${idx * 60}ms` }}
                       >
-                         <td className="py-3 px-4 text-center text-gray-800 font-medium align-middle">{msg.name}</td>
-                         <td className="py-3 px-4 text-center text-blue-700 underline align-middle">{msg.email}</td>
-                         <td className="py-3 px-4 text-left max-w-xs text-gray-600 break-words align-middle">{msg.message}</td>
-                         <td className="py-3 px-4 text-center text-gray-500 whitespace-nowrap align-middle">{msg.created_at}</td>
-                         <td className="py-3 px-4 flex gap-2 items-center justify-center align-middle">
+                        <td className="py-3 px-4 text-center text-gray-800 font-medium align-middle">{msg.name}</td>
+                        <td className="py-3 px-4 text-center text-blue-700 underline align-middle">{msg.email}</td>
+                        <td className="py-3 px-4 text-left max-w-xs text-gray-600 break-words align-middle">{msg.message}</td>
+                        <td className="py-3 px-4 text-center text-gray-500 whitespace-nowrap align-middle">{msg.created_at}</td>
+                        <td className="py-3 px-4 flex gap-2 items-center justify-center align-middle">
                           <button
                             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-semibold shadow hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
                             title="Répondre"
@@ -178,57 +200,72 @@ const Contact = () => {
                     ))}
                   </tbody>
                 </table>
-                {/* Modale de confirmation suppression */}
-                {showDeleteModal && (
-                  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowDeleteModal(false)}>
-                    <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
-                      <div className="text-lg font-semibold mb-4 text-gray-800">Supprimer ce message ?</div>
-                      <div className="flex gap-3 justify-end mt-6">
-                        <button className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition" onClick={confirmDelete}>Confirmer</button>
-                        <button className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition" onClick={() => setShowDeleteModal(false)}>Annuler</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {/* Modale de réponse */}
-                {showReplyModal && (
-                  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadein" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-4 animate-fadein" onClick={e => e.stopPropagation()}>
-                      <div className="text-lg font-semibold mb-4 text-gray-800">Répondre à {replyingTo?.name}</div>
-                      <textarea
-                        className="w-full border border-gray-300 rounded-lg p-3 mb-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                        placeholder="Votre réponse..."
-                        value={replyContent}
-                        onChange={e => setReplyContent(e.target.value)}
-                        rows={5}
-                        disabled={sendingReply}
-                        autoFocus
-                      />
-                      {replySuccess && <div className="text-green-600 mb-2 font-medium">{replySuccess}</div>}
-                      {replyError && <div className="text-red-600 mb-2 font-medium">{replyError}</div>}
-                      <div className="flex gap-3 justify-end mt-4">
-                        <button
-                          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60"
-                          onClick={handleSendReply}
-                          disabled={sendingReply || !replyContent.trim()}
-                        >
-                          Envoyer
-                        </button>
-                        <button
-                          className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition"
-                          onClick={() => setShowReplyModal(false)}
-                          disabled={sendingReply}
-                        >
-                          Annuler
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
+
+              {/* Mobile/List */}
+              <ul className="block md:hidden space-y-4">
+                {messages.map(msg => {
+                  const isOpen = expandedId === msg.id;
+                  return (
+                    <li
+                      key={msg.id}
+                      className="bg-white rounded-xl shadow p-4 transition"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-gray-800">{msg.name}</p>
+                          <p className="text-blue-600 underline text-sm">
+                            {msg.email}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => toggleExpand(msg.id)}
+                          className="p-2 rounded-full hover:bg-gray-100 transition"
+                          aria-label="Toggle details"
+                        >
+                          {isOpen ? (
+                            <ChevronUp size={20} />
+                          ) : (
+                            <ChevronDown size={20} />
+                          )}
+                        </button>
+                      </div>
+
+                      {isOpen && (
+                        <div className="mt-4 space-y-3 border-t pt-3">
+                          <p className="text-gray-500 text-sm">
+                            <span className="font-semibold">Date :</span>{' '}
+                            {msg.created_at}
+                          </p>
+                          <p className="text-gray-700">{msg.message}</p>
+
+                          <div className="flex gap-2 flex-wrap">
+                            <button
+                              onClick={() => handleReply(msg)}
+                              className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-semibold shadow hover:bg-blue-700 transition"
+                            >
+                              <Mail size={16} />
+                              Répondre
+                            </button>
+
+                            <button
+                              onClick={() => handleDelete(msg)}
+                              className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition"
+                            >
+                              <Trash size={16} />
+                              Supprimer
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
         </main>
+
         <AdminFooter />
       </div>
     </div>
