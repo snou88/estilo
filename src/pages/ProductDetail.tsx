@@ -31,7 +31,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [size, setSize] = useState<string>('M');
+  const [size, setSize] = useState<string>('Ce produit n’a pas de tailles disponibles');
   const [color, setColor] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
   // const [wilaya, setWilaya] = useState<string>(wilayas[0]);
@@ -120,17 +120,24 @@ export default function ProductDetail() {
           <p className="text-gray-600 mb-4 text-lg">{product.description}</p>
 
           {/* Size selector */}
-          <div className="flex gap-4 mb-4">
-            <span className="font-medium">Taille :</span>
-            {product.sizes.map(s => (
-              <button
-                key={s}
-                onClick={() => setSize(s)}
-                className={`px-3 py-1 rounded border ${size === s ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border-blue-600'}`}
-              >
-                {s}
-              </button>
-            ))}
+          <div className="flex flex-col gap-2 mb-4">
+            <span className="font-medium">
+            {product.sizes.length > 0 ? (
+              <div className="flex gap-4">
+                Taille :
+                {product.sizes.map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`px-3 py-1 rounded border ${size === s ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border-blue-600'}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            ) : (
+               <> Taille : Standard </>
+            )}</span>
           </div>
 
           {/* Quantity selector */}
@@ -155,7 +162,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <button 
+            <button
               onClick={() => {
                 if (!product) return;
                 addToCart({
@@ -166,14 +173,14 @@ export default function ProductDetail() {
                   size: size,
                   image: product.images[0]?.image_path || ''
                 });
-                updateQuantity( product.id,  color,  size, quantity);
+                updateQuantity(product.id, color, size, quantity);
                 navigate('/cart');
               }}
               className="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-all mb-2"
             >
               Commander maintenant
             </button>
-            <button 
+            <button
               onClick={() => {
                 if (!product) return;
                 addToCart({
@@ -184,7 +191,7 @@ export default function ProductDetail() {
                   size: size,
                   image: product.images[0]?.image_path || ''
                 });
-                updateQuantity( product.id,  color,  size, quantity);
+                updateQuantity(product.id, color, size, quantity);
               }}
               className="w-full bg-white border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-50 transition-all"
             >
