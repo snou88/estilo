@@ -130,8 +130,7 @@ const WilayasAdmin: React.FC = () => {
           onClick={() => setShowAddModal(true)}
           className="w-full md:w-auto md:ml-auto bg-green-600 text-white px-4 py-2 rounded h-10 flex items-center justify-center gap-1"
         >
-          <Plus size={16} className="md:hidden" />
-          <span className="hidden md:inline">Ajouter</span>
+          <span>Ajouter</span>
         </button>
       </div>
       {/* Tableau */}
