@@ -166,7 +166,7 @@ export default function ProductDetail() {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => {
-                if (!product || size == "Ce produit n’a pas de tailles disponibles" && product.sizes.length > 0) return setShowPopup(true); // Sécurité supplémentaire
+                if (!product || size == "Standard" && product.sizes.length > 0) return setShowPopup(true); // Sécurité supplémentaire
                 addToCart({
                   id: product.id,
                   name: product.name,
