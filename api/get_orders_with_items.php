@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once '../config/db_config.php';
 
 try {
-    // Récupérer toutes les commandes avec leurs items
+    // Récupérer toutes les commandes avec leurs items (chaque ligne = une commande * item)
     $sql = "
         SELECT 
-            o.id,
+            o.id AS order_id,
             o.customer_name,
             o.customer_phone,
             o.shipping_address,
@@ -25,58 +25,77 @@ try {
             o.wilaya_id,
             w.name AS wilaya_name,
             w.shipping_price AS wilaya_shipping_price,
-            -- o.shipping_price, (supprimé)
             o.total_amount,
             o.status,
             o.created_at,
             o.updated_at,
-            JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'id', oi.id,
-                    'product_id', oi.product_id,
-                    'product_name', p.name,
-                    'size', oi.size,
-                    'color', oi.color,
-                    'quantity', oi.quantity,
-                    'unit_price', oi.unit_price,
-                    'total_price', (oi.quantity * oi.unit_price)
-                )
-            ) as items
+            oi.id AS item_id,
+            oi.product_id,
+            p.name AS product_name,
+            oi.size,
+            oi.color,
+            oi.quantity,
+            oi.unit_price
         FROM orders o
         LEFT JOIN wilayas w ON o.wilaya_id = w.id
         LEFT JOIN order_items oi ON o.id = oi.order_id
         LEFT JOIN products p ON oi.product_id = p.id
-        GROUP BY o.id
         ORDER BY o.created_at DESC
     ";
-    
+
     $stmt = $pdo->query($sql);
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Traiter les items JSON pour chaque commande
-    foreach ($orders as &$order) {
-        if ($order['items'] === null) {
-            $order['items'] = [];
-        } else {
-            $order['items'] = json_decode($order['items'], true);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $orders = [];
+
+    foreach ($rows as $row) {
+        $id = $row['order_id'];
+
+        // Initialiser la commande si elle n'existe pas encore
+        if (!isset($orders[$id])) {
+            $orders[$id] = [
+                'id' => $id,
+                'customer_name' => $row['customer_name'],
+                'customer_phone' => $row['customer_phone'],
+                'shipping_address' => $row['shipping_address'],
+                'shipping_city' => $row['shipping_city'],
+                'shipping_zip' => $row['shipping_zip'],
+                'wilaya_id' => $row['wilaya_id'],
+                'wilaya_name' => $row['wilaya_name'],
+                'wilaya_shipping_price' => (float)$row['wilaya_shipping_price'],
+                'total_amount' => (float)$row['total_amount'],
+                'status' => $row['status'],
+                'created_at' => date('d/m/Y H:i', strtotime($row['created_at'])),
+                'updated_at' => date('d/m/Y H:i', strtotime($row['updated_at'])),
+                'items' => []
+            ];
         }
-        
-        // Formater les dates
-        $order['created_at'] = date('d/m/Y H:i', strtotime($order['created_at']));
-        $order['updated_at'] = date('d/m/Y H:i', strtotime($order['updated_at']));
-        
-        // Formater les montants
-        // $order['shipping_price'] = (float)$order['shipping_price']; // This line is removed
-        $order['total_amount'] = (float)$order['total_amount'];
+
+        // Ajouter l'item s'il existe (évite les lignes vides si LEFT JOIN sans order_items)
+        if (!empty($row['item_id'])) {
+            $orders[$id]['items'][] = [
+                'id' => $row['item_id'],
+                'product_id' => $row['product_id'],
+                'product_name' => $row['product_name'],
+                'size' => $row['size'],
+                'color' => $row['color'],
+                'quantity' => (int)$row['quantity'],
+                'unit_price' => (float)$row['unit_price'],
+                'total_price' => (float)$row['unit_price'] * (int)$row['quantity']
+            ];
+        }
     }
-    
+
+    // Réindexer les commandes (de associative à array)
+    $orders = array_values($orders);
+
     echo json_encode([
         'success' => true,
         'orders' => $orders
     ]);
-    
+
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['error' => 'Erreur serveur: ' . $e->getMessage()]);
 }
-?> 
+?>
