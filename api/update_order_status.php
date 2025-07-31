@@ -95,7 +95,6 @@ try {
         
         $order['created_at'] = date('d/m/Y H:i', strtotime($order['created_at']));
         $order['updated_at'] = date('d/m/Y H:i', strtotime($order['updated_at']));
-        $order['shipping_price'] = (float)$order['shipping_price'];
         $order['total_amount'] = (float)$order['total_amount'];
     }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import { Edit, Plus, Trash2 } from 'lucide-react';
 interface Wilaya {
   id: number;
   name: string;
@@ -117,16 +117,22 @@ const WilayasAdmin: React.FC = () => {
       <h1 className="text-2xl font-bold mb-6">Gestion des Wilayas</h1>
       {error && <div className="mb-4 text-red-600">{error}</div>}
       {/* Filtres + bouton ajouter */}
-      <div className="flex flex-wrap gap-2 mb-4 items-end">
+      <div className="flex flex-wrap gap-2 mb-4 items-end justify-center md:justify-start ">
         <div>
           <label className="block text-sm font-medium mb-1">Filtrer par nom</label>
           <input type="text" value={filterName} onChange={e => { setFilterName(e.target.value); setPage(1); }} className="border px-2 py-1 rounded" placeholder="Nom..." />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Filtrer par prix</label>
-          <input type="number" value={filterPrice} onChange={e => { setFilterPrice(e.target.value); setPage(1); }} className="border px-2 py-1 rounded w-28" placeholder="Prix..." />
+          <input type="number" value={filterPrice} onChange={e => { setFilterPrice(e.target.value); setPage(1); }} className="border px-2 py-1 rounded" placeholder="Prix..." />
         </div>
-        <button onClick={() => setShowAddModal(true)} className="ml-auto bg-green-600 text-white px-4 py-2 rounded h-10">Ajouter</button>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="w-full md:w-auto md:ml-auto bg-green-600 text-white px-4 py-2 rounded h-10 flex items-center justify-center gap-1"
+        >
+          <Plus size={16} className="md:hidden" />
+          <span className="hidden md:inline">Ajouter</span>
+        </button>
       </div>
       {/* Tableau */}
       <table className="w-full border mb-6">
@@ -154,7 +160,7 @@ const WilayasAdmin: React.FC = () => {
                   <input type="number" value={editValue.shipping_price} onChange={e => setEditValue(ev => ({ ...ev, shipping_price: Number(e.target.value) }))} className="border px-2 py-1 w-24" />
                 ) : w.shipping_price}
               </td>
-              <td className="border p-2">
+              <td className="border p-2 flex">
                 {editId === w.id ? (
                   <>
                     <button onClick={() => handleEditSave(w.id)} className="bg-green-500 text-white px-2 py-1 rounded mr-2">Enregistrer</button>
@@ -162,8 +168,21 @@ const WilayasAdmin: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <button onClick={() => handleEdit(w)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">Modifier</button>
-                    <button onClick={() => handleDelete(w.id)} className="bg-red-500 text-white px-2 py-1 rounded">Supprimer</button>
+                    <button
+                      onClick={() => handleEdit(w)}
+                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 flex items-center gap-1"
+                    >
+                      <Edit size={16} className="md:hidden" /> {/* icône visible sur petit écran */}
+                      <span className="hidden md:block">Modifier</span> {/* texte visible sur md+ */}
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(w.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded flex items-center gap-1"
+                    >
+                      <Trash2 size={16} className="md:hidden" />
+                      <span className="hidden md:block">Supprimer</span>
+                    </button>
                   </>
                 )}
               </td>
