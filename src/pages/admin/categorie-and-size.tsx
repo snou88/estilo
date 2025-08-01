@@ -70,9 +70,15 @@ const CategorySizeManager = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   
-  // État pour la navigation par carrousel
-  const [currentIndex, setCurrentIndex] = useState(0);
-
+  // États pour la pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPageMobile = 2; // 2 catégories par page sur mobile
+  
+  // Réinitialiser à la première page quand les catégories changent
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categories.length]);
+  
   // Charger les catégories et tailles
   useEffect(() => {
     fetchCategories();
@@ -323,13 +329,30 @@ const CategorySizeManager = () => {
     setError('');
   };
 
-  // Fonctions de navigation par carrousel
-  const prevCategory = () => {
-    setCurrentIndex((prev) => (prev === 0 ? categories.length - 1 : prev - 1));
+  // Fonctions pour la pagination
+  const totalPages = Math.ceil(categories.length / itemsPerPageMobile);
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
   };
-
-  const nextCategory = () => {
-    setCurrentIndex((prev) => (prev === categories.length - 1 ? 0 : prev + 1));
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+  
+  // Fonction pour obtenir les catégories à afficher en fonction de la page actuelle
+  const getCurrentCategories = () => {
+    if (window.innerWidth >= 640) { // sm breakpoint de Tailwind
+      return categories; // Afficher toutes les catégories sur les grands écrans
+    } else {
+      // Pagination pour mobile : 2 catégories par page
+      const startIndex = (currentPage - 1) * itemsPerPageMobile;
+      return categories.slice(startIndex, startIndex + itemsPerPageMobile);
+    }
   };
 
   if (loading) {
@@ -353,8 +376,8 @@ const CategorySizeManager = () => {
       <div className="admin-main">
         <AdminHeader />
         <main className="admin-content">
-          <div className="bg-gray-50 min-h-screen py-8">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gray-50 min-h-screen py-4 sm:py-8">
+            <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
               {/* Header */}
               <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestion des Catégories & Tailles</h1>
@@ -364,7 +387,7 @@ const CategorySizeManager = () => {
               {/* Messages de succès/erreur */}
               {successMessage && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex">
+                  <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <Save className="h-5 w-5 text-green-400" />
                     </div>
@@ -389,113 +412,116 @@ const CategorySizeManager = () => {
               )}
 
               {/* Bouton d'ajout de catégorie */}
-              <div className="mb-6">
+              <div className="mb-4 sm:mb-6">
                 <button
                   onClick={() => setShowAddCategoryModal(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-3 sm:px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Ajouter une catégorie
+                  <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">Ajouter une catégorie</span>
                 </button>
               </div>
 
-              {/* Navigation par carrousel */}
-              {categories.length > 1 && (
-                <div className="flex justify-between items-center mb-4">
-                  <button
-                    onClick={prevCategory}
-                    className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-
-                  {/* Liste des catégories avec carrousel */}
-                  <div className="relative overflow-hidden">
-                    <div
-                      className="flex transition-transform duration-500 ease-in-out"
-                      style={{ transform: `translateX(-${currentIndex * 50}%)`, width: `${categories.length * 50}%` }}
-                    >
-                      {categories.map(category => (
-                        <div key={category.id} className="w-full px-2">
-                          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                            {/* Header de la catégorie */}
-                            <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                              <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
-                                <div className="flex items-center space-x-2">
-                                  <button
-                                    onClick={() => openEditCategoryModal(category)}
-                                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                                  >
-                                    <Edit className="h-3 w-3 mr-1" />
-                                    Modifier
-                                  </button>
-                                  <button
-                                    onClick={() => openDeleteModal('category', category.id, category.name)}
-                                    className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                                  >
-                                    <Trash className="h-3 w-3 mr-1" />
-                                    Supprimer
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedCategoryId(category.id);
-                                      setShowAddSizeModal(true);
-                                    }}
-                                    className="inline-flex items-center px-3 py-1.5 border border-green-300 shadow-sm text-xs font-medium rounded text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                                  >
-                                    <Plus className="h-3 w-3 mr-1" />
-                                    Ajouter taille
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Tailles de la catégorie */}
-                            <div className="px-6 py-4">
-                              {category.sizes.length === 0 ? (
-                                <p className="text-gray-500 text-sm italic">Aucune taille définie pour cette catégorie</p>
-                              ) : (
-                                <div className="flex flex-wrap gap-2">
-                                  {category.sizes.map(size => (
-                                    <div
-                                      key={size.id}
-                                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 group hover:bg-blue-200 transition-colors"
-                                    >
-                                      <span>{size.name}</span>
-                                      <div className="ml-2 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                          onClick={() => openEditSizeModal(size, category.id)}
-                                          className="text-blue-600 hover:text-blue-800 transition-colors"
-                                        >
-                                          <Edit className="h-3 w-3" />
-                                        </button>
-                                        <button
-                                          onClick={() => openDeleteModal('size', size.id, size.name, category.id)}
-                                          className="text-red-600 hover:text-red-800 transition-colors"
-                                        >
-                                          <Trash className="h-3 w-3" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+              {/* Liste des catégories en grille responsive */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+                {getCurrentCategories().length > 0 ? (
+                  getCurrentCategories().map((category) => (
+                    <div key={category.id} className="w-full">
+                      <div className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+                        <div className="p-3 sm:p-4 border-b border-gray-200 flex justify-between items-center">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{category.name}</h3>
+                          <div className="flex space-x-1 sm:space-x-2">
+                            <button
+                              onClick={() => openEditCategoryModal(category)}
+                              className="p-1 text-blue-600 hover:text-blue-800 focus:outline-none"
+                              title="Modifier la catégorie"
+                            >
+                              <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            </button>
+                            <button
+                              onClick={() => openDeleteModal('category', category.id, category.name)}
+                              className="p-1 text-red-600 hover:text-red-800 focus:outline-none"
+                              title="Supprimer la catégorie"
+                            >
+                              <Trash className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedCategoryId(category.id);
+                                setShowAddSizeModal(true);
+                              }}
+                              className="p-1 text-green-600 hover:text-green-800 focus:outline-none"
+                              title="Ajouter une taille"
+                            >
+                              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            </button>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  <button
-                    onClick={nextCategory}
-                    className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              )}
+                        {/* Tailles de la catégorie */}
+                        <div className="p-4">
+                          {category.sizes.length === 0 ? (
+                            <p className="text-gray-500 text-sm italic">Aucune taille définie pour cette catégorie</p>
+                          ) : (
+                            <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {category.sizes.map((size) => (
+                                <li key={size.id} className="flex justify-between items-center bg-gray-50 px-2 py-1.5 sm:px-3 sm:py-2 rounded">
+                                  <span className="text-xs sm:text-sm text-gray-800 truncate">{size.name}</span>
+                                  <div className="flex space-x-1 sm:space-x-2">
+                                    <button
+                                      onClick={() => openEditSizeModal(size, category.id)}
+                                      className="text-blue-600 hover:text-blue-800 focus:outline-none"
+                                      title="Modifier la taille"
+                                    >
+                                      <Edit className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => openDeleteModal('size', size.id, size.name, category.id)}
+                                      className="text-red-600 hover:text-red-800 focus:outline-none"
+                                      title="Supprimer la taille"
+                                    >
+                                      <Trash className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                    </button>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full">
+                    <p className="mt-1 text-sm text-gray-500 text-center">Aucune catégorie à afficher. {currentPage > 1 ? 'Revenez à la première page.' : 'Commencez par ajouter votre première catégorie.'}</p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Contrôles de pagination (uniquement sur mobile) */}
+              <div className="sm:hidden flex justify-between items-center mt-4">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className={`flex items-center px-4 py-2 rounded-md ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-50'}`}
+                >
+                  <ChevronLeft className="h-5 w-5 mr-1" />
+                  Précédent
+                </button>
+                
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} sur {totalPages || 1}
+                </span>
+                
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage >= totalPages}
+                  className={`flex items-center px-4 py-2 rounded-md ${currentPage >= totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-50'}`}
+                >
+                  Suivant
+                  <ChevronRight className="h-5 w-5 ml-1" />
+                </button>
+              </div>
               {categories.length === 0 && (
                 <div className="text-center py-12">
                   <div className="mx-auto h-12 w-12 text-gray-400">
