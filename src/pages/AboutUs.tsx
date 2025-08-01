@@ -191,7 +191,7 @@ const AboutUs = () => {
                         </ul>
                         <div className="mt-8">
                           <div className="inline-flex rounded-md shadow">
-                            <a href="products" className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-5 py-3 text-base font-medium text-white hover:bg-blue-700">
+                            <a href="products" className="inline-flex items-center justify-center rounded-md border border-transparent bg-black px-5 py-3 text-base font-medium text-white hover:bg-blue-700">
                               Découvrir Notre Collection
                             </a>
                           </div>
@@ -228,7 +228,7 @@ const AboutUs = () => {
             <div className="text-center">
               <h2 className="text-3xl font-extrabold text-white sm:text-4xl animate-fade-in">
                 <span className="block">L'Excellence</span>
-                <span className="block text-blue-400">à Chaque Étape</span>
+                <span className="block text-blue-600">à Chaque Étape</span>
               </h2>
               <p className="mx-auto mt-3 max-w-md text-base text-white sm:text-lg md:mt-5 md:max-w-3xl animate-fade-in">
                 De la sélection des matériaux à la livraison, chaque étape est menée avec la plus grande attention.

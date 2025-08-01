@@ -159,7 +159,7 @@ const WilayasAdmin: React.FC = () => {
                   <input type="number" value={editValue.shipping_price} onChange={e => setEditValue(ev => ({ ...ev, shipping_price: Number(e.target.value) }))} className="border px-2 py-1 w-24" />
                 ) : w.shipping_price}
               </td>
-              <td className="border p-2 flex">
+              <td className="border p-2 flex justify-center">
                 {editId === w.id ? (
                   <>
                     <button onClick={() => handleEditSave(w.id)} className="bg-green-500 text-white px-2 py-1 rounded mr-2">Enregistrer</button>

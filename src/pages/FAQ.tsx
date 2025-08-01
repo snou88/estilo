@@ -6,22 +6,22 @@ const faqs = [
   {
     question: 'Comment passer une commande sur Estilo ?',
     answer: 'Pour passer une commande, il vous suffit de parcourir notre catalogue, d’ajouter les articles souhaités à votre panier, puis de suivre les instructions de paiement. Un email de confirmation vous sera envoyé.',
-    icon: <HelpCircle className="h-6 w-6 text-indigo-500" />,
+    icon: <HelpCircle className="h-6 w-6 text-black" />,
   },
   {
     question: 'Quels sont les délais de livraison ?',
     answer: 'La livraison standard est généralement effectuée sous 2 à 5 jours ouvrés. Vous recevrez un numéro de suivi dès l’expédition de votre commande.',
-    icon: <Truck className="h-6 w-6 text-indigo-500" />,
+    icon: <Truck className="h-6 w-6 text-black" />,
   },
   {
     question: 'Puis-je retourner un article ?',
     answer: 'Oui, vous disposez de 14 jours après réception pour retourner un article non porté. Consultez notre page Retours pour plus de détails.',
-    icon: <RefreshCw className="h-6 w-6 text-indigo-500" />,
+    icon: <RefreshCw className="h-6 w-6 text-black" />,
   },
   {
     question: 'Quels moyens de paiement acceptez-vous ?',
     answer: 'Nous acceptons les paiements par carte bancaire (Visa, Mastercard), PayPal et Apple Pay.',
-    icon: <CreditCard className="h-6 w-6 text-indigo-500" />,
+    icon: <CreditCard className="h-6 w-6 text-black" />,
   },
 ];
 

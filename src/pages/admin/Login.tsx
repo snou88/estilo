@@ -102,7 +102,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 text-white font-semibold text-lg shadow hover:bg-blue-700 transition disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-black text-white font-semibold text-lg shadow hover:bg-black/80 transition disabled:opacity-60"
           >
             <LogIn size={20} /> {loading ? 'Connexion...' : 'Se connecter'}
           </button>

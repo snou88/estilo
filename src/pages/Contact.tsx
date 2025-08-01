@@ -45,7 +45,7 @@ const Contact = () => {
             />
             <button
               type="submit"
-              className="mt-2 py-3 rounded-lg bg-indigo-600 text-white font-semibold text-lg shadow-md hover:bg-indigo-700 transition"
+              className="mt-2 py-3 rounded-lg bg-black text-white font-semibold text-lg shadow-md hover:bg-gray-800 transition"
             >
               Envoyer
             </button>
@@ -63,22 +63,22 @@ const Contact = () => {
               <span className="font-medium">Adresse :</span> 123 Avenue de la Mode, Paris
             </div>
             <div>
-              <span className="font-medium">Téléphone :</span> <a href="tel:+33123456789" className="text-indigo-600 hover:underline">01 23 45 67 89</a>
+              <span className="font-medium">Téléphone :</span> <a href="tel:+33123456789" className="text-black hover:underline">01 23 45 67 89</a>
             </div>
             <div>
-              <span className="font-medium">Email :</span> <a href="mailto:contact@estilo.fr" className="text-indigo-600 hover:underline">contact@estilo.fr</a>
+              <span className="font-medium">Email :</span> <a href="mailto:contact@estilo.fr" className="text-black hover:underline">contact@estilo.fr</a>
             </div>
             <div className="flex gap-6 mt-6 mb-6 justify-center">
-              <a href="#" className="text-gray-400 hover:text-indigo-600 transition" aria-label="Facebook">
+              <a href="#" className="text-gray-400 hover:text-black transition" aria-label="Facebook">
                 <Facebook className="h-7 w-7" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-indigo-600 transition" aria-label="Instagram">
+              <a href="#" className="text-gray-400 hover:text-black transition" aria-label="Instagram">
                 <Instagram className="h-7 w-7" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-indigo-600 transition" aria-label="Twitter">
+              <a href="#" className="text-gray-400 hover:text-black transition" aria-label="Twitter">
                 <Twitter className="h-7 w-7" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-indigo-600 transition" aria-label="LinkedIn">
+              <a href="#" className="text-gray-400 hover:text-black transition" aria-label="LinkedIn">
                 <Linkedin className="h-7 w-7" />
               </a>
             </div>

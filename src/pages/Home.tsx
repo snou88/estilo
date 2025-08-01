@@ -1,38 +1,41 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Ajout de useNavigate
 import { ArrowRight, Star, Truck, Shield, RefreshCw } from 'lucide-react';
 
 const Home = () => {
+  const navigate = useNavigate(); // Hook de navigation
+
   const featuredProducts = [
     {
       id: 1,
       name: 'Veste Élégante',
-      price: '8900 DA',
       image: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Vestes'
     },
     {
       id: 2,
       name: 'Robe Moderne',
-      price: '6500 DA',
       image: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Robes'
     },
     {
       id: 3,
       name: 'Chemise Classique',
-      price: '4500 DA',
       image: 'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Chemises'
     },
     {
       id: 4,
       name: 'Pantalon Tendance',
-      price: '7500 DA',
       image: 'https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=400',
       category: 'Pantalons'
     }
   ];
+
+  // Fonction de redirection
+  const handleProductClick = () => {
+    navigate('/products'); // Redirige vers la page produits
+  };
 
   const features = [
     {
@@ -59,11 +62,11 @@ const Home = () => {
         <div className="absolute inset-0 bg-black/5"></div>
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-7xl font-light text-black mb-6 tracking-tight">
-            Style. Élégance. 
+            Style. Élégance.
             <span className="block font-normal">Estilo.</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Découvrez notre collection exclusive de vêtements qui allient 
+            Découvrez notre collection exclusive de vêtements qui allient
             sophistication moderne et confort exceptionnel.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -92,7 +95,7 @@ const Home = () => {
               Produits Vedettes
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Sélection de nos pièces les plus appréciées, 
+              Sélection de nos pièces les plus appréciées,
               conçues pour sublimer votre style unique.
             </p>
           </div>
@@ -102,6 +105,7 @@ const Home = () => {
               <div
                 key={product.id}
                 className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                onClick={handleProductClick} // Ajout de la redirection ici
               >
                 <div className="relative overflow-hidden bg-gray-100 aspect-[3/4] mb-4">
                   <img
@@ -114,7 +118,6 @@ const Home = () => {
                 <div className="text-center">
                   <p className="text-sm text-gray-500 mb-1">{product.category}</p>
                   <h3 className="text-lg font-medium text-black mb-2">{product.name}</h3>
-                  <p className="text-xl font-semibold text-black">{product.price}</p>
                 </div>
               </div>
             ))}
@@ -154,7 +157,7 @@ const Home = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-light mb-4">Restez Informé</h2>
           <p className="text-xl text-gray-300 mb-8">
-            Inscrivez-vous à notre newsletter pour découvrir en avant-première 
+            Inscrivez-vous à notre newsletter pour découvrir en avant-première
             nos nouvelles collections et offres exclusives.
           </p>
           <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-4">
@@ -188,8 +191,8 @@ const Home = () => {
                   ))}
                 </div>
                 <p className="text-gray-600 mb-6 italic leading-relaxed">
-                  "Qualité exceptionnelle et style intemporel. 
-                  Estilo a transformé ma garde-robe avec des pièces 
+                  "Qualité exceptionnelle et style intemporel.
+                  Estilo a transformé ma garde-robe avec des pièces
                   qui me correspondent parfaitement."
                 </p>
                 <div className="font-medium text-black">Marie L.</div>

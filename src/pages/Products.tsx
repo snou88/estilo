@@ -241,7 +241,7 @@ const Products = () => {
 
               <button
                 onClick={clearFilters}
-                className="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition"
+                className="w-full mt-4 bg-black hover:bg-gray-800 text-white py-2 px-4 rounded transition"
               >
                 Réinitialiser les filtres
               </button>
@@ -255,7 +255,7 @@ const Products = () => {
                 <p className="text-gray-500 text-lg">Aucun produit ne correspond à vos critères de recherche.</p>
                 <button
                   onClick={clearFilters}
-                  className="mt-4 text-blue-600 hover:underline"
+                  className="mt-4 text-white hover:underline"
                 >
                   Réinitialiser les filtres
                 </button>
@@ -280,7 +280,7 @@ const Products = () => {
                       </div>
                       <div className="p-4">
                         <p className="text-gray-600 mb-1">{product.category_name || 'Sans catégorie'}</p>
-                        <p className="text-blue-600 font-bold text-xl">{product.price} DA</p>
+                        <p className="text-black font-bold text-xl">{product.price} DA</p>
                         
                         {/* Color indicators */}
                         {product.colors && product.colors.length > 0 && (
@@ -304,7 +304,7 @@ const Products = () => {
                           </div>
                         )}
                         
-                        <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+                        <button className="mt-4 w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
                           Voir le produit
                         </button>
                       </div>
