@@ -120,10 +120,10 @@ const AboutUs = () => {
               <div className="sm:text-center">
                 <h1 className="text-6xl tracking-tight font-extrabold gradient-text sm:text-7xl md:text-8xl">
                   <span className="block">ESTILO</span>
-                  <span className="block">L'Élégance French Touch</span>
+                  <span className="block">L'Élégance Algerienne</span>
                 </h1>
                 <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl animate-float">
-                  Depuis 2010, ESTILO est synonyme d'excellence en matière de mode française. 
+                  Depuis 2010, ESTILO est synonyme d'excellence en matière de mode Algerienne. 
                   Nous combinons tradition et innovation pour créer des pièces uniques qui transcendent les tendances.
                 </p>
               </div>
@@ -155,7 +155,7 @@ const AboutUs = () => {
                         </h2>
                         <p className="mt-4 text-lg text-gray-500 animate-fade-in">
                           Chaque pièce ESTILO est conçue avec un souci du détail exemplaire. 
-                          Nos artisans français sélectionnent les meilleurs matériaux et appliquent des techniques ancestrales pour créer des vêtements qui durent.
+                          Nos artisans Algeriens sélectionnent les meilleurs matériaux et appliquent des techniques ancestrales pour créer des vêtements qui durent.
                         </p>
                         <ul className="mt-6 space-y-6">
                           <li className="flex">

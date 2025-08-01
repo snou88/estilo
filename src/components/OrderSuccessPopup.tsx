@@ -40,7 +40,7 @@ export default function OrderSuccessPopup({ isOpen, onClose }: Props) {
           </motion.div>
           <h2 className="text-2xl font-semibold mb-2">Commande Confirmée !</h2>
           <p className="text-center text-gray-600 mb-6">
-            Merci pour votre achat. Vous recevrez bientôt un e-mail de confirmation.
+            Merci pour votre achat. Vous recevrez bientôt un appel de confirmation.
           </p>
           <button
             onClick={onClose}
