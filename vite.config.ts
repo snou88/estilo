@@ -16,28 +16,9 @@ export default defineConfig({
     // bind to all network interfaces (so you can access via localhost or LAN IP)
     host: true,
     // default HTTP port
-    port: 80,
+    port: 8000,
     // if you want to disable strict port-checking (auto-increment if 80 is in use):
     strictPort: false,
-    proxy: {
-      "": {
-        target: "https://github.com/iamabdo/",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, "/api"),
-        configure: (proxy, options) => {
-          // before sending to InfinityFree, override the User-Agent
-          proxy.on("proxyReq", (proxyReq) => {
-            proxyReq.setHeader(
-              "User-Agent",
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-              "AppleWebKit/537.36 (KHTML, like Gecko) " +
-              "Chrome/138.0.0.0 Safari/537.36"
-            );
-          });
-        },
-      },
-    },
   },
 });
 
