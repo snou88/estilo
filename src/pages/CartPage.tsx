@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { X, Plus, Minus, CheckCircle, AlertCircle } from 'lucide-react';
 import CheckoutModal from '../components/CheckoutModal';
 import OrderSuccessPopup from '../components/OrderSuccessPopup';
+import { getPhpApiUrl } from '../utils/api';
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -25,7 +26,6 @@ const CartPage = () => {
   };
 
   const handleCheckout = async (orderData: any) => {
-
     setOrderLoading(true);
     setOrderError('');
 
@@ -41,7 +41,7 @@ const CartPage = () => {
         }))
       };
 
-      const response = await fetch('http://localhost/estilo/api/create_order.php', {
+      const response = await fetch(getPhpApiUrl('api/create_order.php'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

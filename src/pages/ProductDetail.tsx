@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Truck, Shield, RefreshCw, Star, ArrowLeft, ArrowRight } from 'lucide-react';
+import { getPhpApiUrl } from '../utils/api';
 
 
 type Image = {
@@ -48,7 +49,7 @@ export default function ProductDetail() {
   // Fetch product data
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost/estilo/api/products/read_one.php?id=${id}`)
+    fetch(getPhpApiUrl(`api/products/read_one.php?id=${id}`))
       .then(res => res.json())
       .then((data: ApiProduct) => {
         setProduct(data);

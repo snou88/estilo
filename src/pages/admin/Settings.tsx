@@ -3,6 +3,7 @@ import { UserPlus, Trash2, ShieldCheck, Loader2, ChevronDown, ChevronUp  } from 
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import './AdminSection.css';
+import { getPhpApiUrl } from '../../utils/api';
 
 
 
@@ -38,7 +39,7 @@ const Settings = () => {
     setError('');
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch('http://localhost/estilo/admin/get_all_admins.php', {
+      const response = await fetch(getPhpApiUrl('admin/get_all_admins.php'), {
         headers: {
           'Authorization': token || ''
         }
@@ -85,7 +86,7 @@ const Settings = () => {
 
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch('http://localhost/estilo/admin/add_admin.php', {
+      const response = await fetch(getPhpApiUrl('admin/add_admin.php'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +124,7 @@ const Settings = () => {
     setDeletingId(id);
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch('http://localhost/estilo/admin/delete_admin.php', {
+      const response = await fetch(getPhpApiUrl('admin/delete_admin.php'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

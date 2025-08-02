@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LogOut, Menu } from 'lucide-react';
 import './AdminHeader.css';
 import { useSidebar } from '../contexts/SidebarContext';
+import { getPhpApiUrl } from '../utils/api';
 
 const ADMIN_NAME = 'Estilo Admin';
 
@@ -16,7 +17,7 @@ const AdminHeader: React.FC = () => {
   const handleLogout = async () => {
     localStorage.removeItem('admin_token');
     try {
-      await fetch('http://localhost/estilo/admin/logout.php', {
+      await fetch(getPhpApiUrl('admin/logout.php'), {
         method: 'POST',
         credentials: 'include',
       });

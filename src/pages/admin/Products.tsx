@@ -6,6 +6,7 @@ import './ProductsAdmin.css';
 import model from '../../assets/images/products/model.png';
 import { Edit, Trash, Plus } from 'lucide-react';
 import AddProductModal from './AddProductModal';
+import { getPhpApiUrl } from '../../utils/api';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -70,7 +71,7 @@ const Products = () => {
       setError('');
       try {
         const token = localStorage.getItem('admin_token');
-        const response = await fetch('http://localhost/estilo/admin/get_all_products.php', {
+        const response = await fetch(getPhpApiUrl('admin/get_all_products.php'), {
           headers: {
             'Authorization': token || ''
           }
@@ -106,7 +107,7 @@ const Products = () => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('admin_token');
-        const response = await fetch('http://localhost/estilo/admin/get_all_categories.php', {
+        const response = await fetch(getPhpApiUrl('admin/get_all_categories.php'), {
           headers: { 'Authorization': token || '' }
         });
         const data = await response.json();
@@ -124,7 +125,7 @@ const Products = () => {
   const handleEdit = (prod: Product) => {
     setSelectedProduct(prod);
     // Charger les images existantes du produit (à partir du backend si besoin)
-    fetch(`http://localhost/estilo/admin/get_product_images.php?id=${prod.id}`, {
+    fetch(getPhpApiUrl(`estilo/admin/get_product_images.php?id=${prod.id}`), {
       headers: { 'Authorization': localStorage.getItem('admin_token') || '' }
     })
       .then(res => res.json())
@@ -150,7 +151,7 @@ const Products = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch('http://localhost/estilo/admin/delete_product.php', {
+      const response = await fetch(getPhpApiUrl('admin/delete_product.php'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +231,7 @@ const Products = () => {
         formData.append('image', editForm.image);
       }
       const token = localStorage.getItem('admin_token');
-      const response = await fetch('http://localhost/estilo/admin/edit_product.php', {
+      const response = await fetch(getPhpApiUrl('admin/edit_product.php'), {
         method: 'POST',
         headers: { 'Authorization': token || '' },
         body: formData
@@ -547,7 +548,7 @@ const SizeManager = () => {
 
   const fetchSizes = () => {
     setLoading(true);
-    fetch('http://localhost/estilo/api/get_sizes.php')
+    fetch(getPhpApiUrl('api/get_sizes.php'))
       .then(res => {
         if (!res.ok) throw new Error('Erreur lors du chargement des tailles');
         return res.json();
@@ -560,7 +561,7 @@ const SizeManager = () => {
   const addSize = () => {
     if (!newSize.trim()) return;
     
-    fetch('http://localhost/estilo/api/add_size.php', {
+    fetch(getPhpApiUrl('api/add_size.php'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newSize })
@@ -576,7 +577,7 @@ const SizeManager = () => {
   const deleteSize = (id: number) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette taille ?')) return;
     
-    fetch('http://localhost/estilo/api/delete_size.php', {
+    fetch(getPhpApiUrl('api/delete_size.php'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
@@ -646,7 +647,7 @@ const CategoryManager = () => {
 
   const fetchCategories = () => {
     setLoading(true);
-    fetch('http://localhost/estilo/api/get_categories.php')
+    fetch(getPhpApiUrl('estilo/api/get_categories.php'))
       .then(res => {
         if (!res.ok) throw new Error('Erreur lors du chargement des catégories');
         return res.json();
@@ -659,7 +660,7 @@ const CategoryManager = () => {
   const addCategory = () => {
     if (!newCategory.trim()) return;
     
-    fetch('http://localhost/estilo/api/add_category.php', {
+    fetch(getPhpApiUrl('api/add_category.php'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newCategory })
@@ -674,8 +675,8 @@ const CategoryManager = () => {
 
   const deleteCategory = (id: number) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return;
-    
-    fetch('http://localhost/estilo/api/delete_category.php', {
+
+    fetch(getPhpApiUrl('api/delete_category.php'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })

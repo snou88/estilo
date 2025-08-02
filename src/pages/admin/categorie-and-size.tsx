@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Edit, Trash, Plus, X, Save, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
+import { getPhpApiUrl } from '../../utils/api';
 
 // Types pour TypeScript
 interface Size {
@@ -270,7 +271,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch('http://localhost/estilo/api/delete_size.php', {
+      const response = await fetch(getPhpApiUrl('api/delete_size.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: deleteItem.id })

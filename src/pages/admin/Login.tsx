@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
+import { getPhpApiUrl } from '../../utils/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ const Login = () => {
       formData.append('email', email);
       formData.append('password', password);
       // Optionnel : formData.append('remember', remember ? '1' : '0');
-      const response = await fetch('http://localhost/estilo/admin/login.php', {
+      const response = await fetch(getPhpApiUrl('admin/login.php'), {
         method: 'POST',
         body: formData,
         credentials: 'include'
