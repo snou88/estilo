@@ -21,7 +21,7 @@ export default defineConfig({
     strictPort: false,
     proxy: {
       "": {
-        target: "https://estilo.ct.ws",
+        target: "https://github.com/iamabdo/",
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
