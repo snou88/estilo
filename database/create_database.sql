@@ -122,7 +122,7 @@ CREATE TABLE product_sizes (
     FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE CASCADE
 );
 ALTER TABLE sizes DROP FOREIGN KEY fk_category,
-    DROP COLUMN category_id;
+    DROP COLUMN category_id;v
     
 INSERT INTO wilayas (name, shipping_price)
 VALUES ('Adrar', 700.00),
