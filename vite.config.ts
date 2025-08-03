@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
@@ -12,5 +11,16 @@ export default defineConfig({
       v7_startTransition: true,
       v7_relativeSplatPath: true
     })
-  }
+  },
+  server: {
+    // bind to all network interfaces (so you can access via localhost or LAN IP)
+    host: true,
+    // default HTTP port
+    port: 8000,
+    // if you want to disable strict port-checking (auto-increment if 80 is in use):
+    strictPort: false,
+  },
 });
+
+
+

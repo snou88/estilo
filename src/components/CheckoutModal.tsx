@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, CheckCircle } from 'lucide-react';
+import { getPhpApiUrl } from '../utils/api';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -40,7 +41,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [total, setTotal] = useState<number>(subtotal);
 
   useEffect(() => {
-    fetch('http://localhost/estilo/api/get_wilayas.php')
+    fetch(getPhpApiUrl('api/get_wilayas.php' ))
       .then(res => res.json())
       .then(data => {
         setWilayas(data.wilayas);
