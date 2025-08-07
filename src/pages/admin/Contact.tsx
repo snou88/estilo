@@ -36,12 +36,20 @@ const Contact = () => {
       setError('');
       try {
         const token = localStorage.getItem('admin_token');
+
         const response = await fetch(getPhpApiUrl('admin/get_all_contact_messages.php'), {
+          method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': token || ''
-          }
+          },
+          body: JSON.stringify({
+            token: token || ''
+          })
         });
+
         const data = await response.json();
+
         if (response.ok) {
           setMessages(data.contact_messages || []);
         } else {
@@ -52,6 +60,7 @@ const Contact = () => {
       } finally {
         setLoading(false);
       }
+
     };
     fetchMessages();
     return () => setAnimate(false);

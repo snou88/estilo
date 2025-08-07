@@ -16,7 +16,7 @@ export default defineConfig({
     // bind to all network interfaces (so you can access via localhost or LAN IP)
     host: true,
     // default HTTP port
-    port: 8000,
+    port: 5173,
     // if you want to disable strict port-checking (auto-increment if 80 is in use):
     strictPort: false,
   },
