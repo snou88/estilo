@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
-import { getPhpApiUrl } from '../../utils/api';
+import { getAdminPhpApiUrl } from '../../utils/api';
 interface Wilaya {
   id: number;
   name: string;
@@ -31,7 +31,7 @@ const WilayasAdmin: React.FC = () => {
   const fetchWilayas = async () => {
     setLoading(true);
     try {
-      const res = await fetch(getPhpApiUrl('api/get_wilayas.php'));
+      const res = await fetch(getAdminPhpApiUrl('api/get_wilayas.php'));
       const data = await res.json();
       setWilayas(data.wilayas);
       setError('');
@@ -64,7 +64,7 @@ const WilayasAdmin: React.FC = () => {
   };
   const handleEditSave = async (id: number) => {
     try {
-      const res = await fetch(getPhpApiUrl('api/update_wilaya.php'), {
+      const res = await fetch(getAdminPhpApiUrl('api/update_wilaya.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, ...editValue })
@@ -79,7 +79,7 @@ const WilayasAdmin: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Supprimer cette wilaya ?')) return;
     try {
-      const res = await fetch(getPhpApiUrl('api/delete_wilaya.php'), {
+      const res = await fetch(getAdminPhpApiUrl('api/delete_wilaya.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -99,7 +99,7 @@ const WilayasAdmin: React.FC = () => {
       return;
     }
     try {
-      const res = await fetch(getPhpApiUrl('api/add_wilaya.php'), {
+      const res = await fetch(getAdminPhpApiUrl('api/add_wilaya.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newWilaya.name, shipping_price: Number(newWilaya.shipping_price) })

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
 import { Trash, Mail, ChevronDown, ChevronUp } from 'lucide-react';
-import { getPhpApiUrl } from '../../utils/api';
+import { getAdminPhpApiUrl } from '../../utils/api';
 
 
 // Type pour un message de contact
@@ -37,7 +37,7 @@ const Contact = () => {
       try {
         const token = localStorage.getItem('admin_token');
 
-        const response = await fetch(getPhpApiUrl('admin/get_all_contact_messages.php'), {
+        const response = await fetch(getAdminPhpApiUrl('admin/get_all_contact_messages.php'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const Contact = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch(getPhpApiUrl('admin/delete_contact_message.php'), {
+      const response = await fetch(getAdminPhpApiUrl('admin/delete_contact_message.php'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

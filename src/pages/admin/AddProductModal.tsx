@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { getPhpApiUrl } from '../../utils/api';
+import { getAdminPhpApiUrl } from '../../utils/api';
 
 interface Category {
   id: number;
@@ -81,7 +81,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, catego
         formData.append('colors[]', addForm.colors[i] || '');
       });
       const token = localStorage.getItem('admin_token');
-      const response = await fetch(getPhpApiUrl('admin/add_product.php'), {
+      const response = await fetch(getAdminPhpApiUrl('admin/add_product.php'), {
         method: 'POST',
         headers: { 'Authorization': token || '' },
         body: formData

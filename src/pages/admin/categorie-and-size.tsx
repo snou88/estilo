@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Edit, Trash, Plus, X, Save, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminFooter from '../../components/AdminFooter';
-import { getPhpApiUrl } from '../../utils/api';
+import { getAdminPhpApiUrl } from '../../utils/api';
 
 // Types pour TypeScript
 interface Size {
@@ -88,7 +88,7 @@ const CategorySizeManager = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch(getPhpApiUrl('api/get_categories_with_sizes.php'));
+      const response = await fetch(getAdminPhpApiUrl('api/get_categories_with_sizes.php'));
       if (!response.ok) {
         throw new Error('Erreur lors du chargement des données');
       }
@@ -108,7 +108,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch(getPhpApiUrl('api/add_category.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/add_category.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newCategoryName.trim() })
@@ -137,7 +137,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch(getPhpApiUrl('api/update_category.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/update_category.php'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: editCategoryData.id, name: editCategoryData.name.trim() })
@@ -168,7 +168,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch(getPhpApiUrl('api/delete_category.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/delete_category.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: deleteItem.id })
@@ -197,7 +197,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch(getPhpApiUrl('api/add_size_to_category.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/add_size_to_category.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category_id: selectedCategoryId, size_name: newSizeName.trim() })
@@ -232,7 +232,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch(getPhpApiUrl('api/update_size.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/update_size.php'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: editSizeData.id, name: editSizeData.name.trim() })
@@ -271,7 +271,7 @@ const CategorySizeManager = () => {
     
     try {
       setActionLoading(true);
-      const response = await fetch(getPhpApiUrl('api/delete_size.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/delete_size.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: deleteItem.id })

@@ -13,7 +13,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import './AdminSection.css';
-import { getPhpApiUrl } from '../../utils/api';
+import { getAdminPhpApiUrl } from '../../utils/api';
 
 interface OrderItem {
   id: number;
@@ -62,7 +62,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch(getPhpApiUrl('api/get_orders_with_items.php'));
+      const response = await fetch(getAdminPhpApiUrl('api/get_orders_with_items.php'));
       if (!response.ok) {
         throw new Error('Erreur lors du chargement des commandes');
       }
@@ -79,7 +79,7 @@ const Orders = () => {
   const updateOrderStatus = async (orderId: number, newStatus: Order['status']) => {
     try {
       setStatusLoading(orderId);
-      const response = await fetch(getPhpApiUrl('api/update_order_status.php'), {
+      const response = await fetch(getAdminPhpApiUrl('api/update_order_status.php'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_id: orderId, status: newStatus })

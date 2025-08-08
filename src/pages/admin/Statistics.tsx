@@ -21,7 +21,7 @@ import {
   BarController
 } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
-import { getPhpApiUrl } from '../../utils/api';
+import { getAdminPhpApiUrl } from '../../utils/api';
 
 // Register ChartJS components
 ChartJS.register(
@@ -90,7 +90,7 @@ const Statistics = () => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const response = await fetch(getPhpApiUrl('api/get_statistics.php'));
+        const response = await fetch(getAdminPhpApiUrl('api/get_statistics.php'));
         const data = await response.json();
         
         if (data.success) {
