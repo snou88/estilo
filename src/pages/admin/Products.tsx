@@ -198,7 +198,7 @@ const Products = () => {
   const getProductImageUrl = (img: string) => {
     if (!img) return model;
     if (img.startsWith('/uploads/products/')) {
-      return `http://localhost/estilo/public${img}`;
+      return `/public${img}`;
     }
     return img;
   };
@@ -445,7 +445,7 @@ const Products = () => {
                                 <button type="button" className="absolute top-1 right-1 text-red-500" onClick={() => handleEditImageDelete(idx)} title="Supprimer">
                                   {img.toDelete ? '↺' : '×'}
                                 </button>
-                                <img src={`http://localhost/estilo/public${img.image_path}`} alt="img" className="w-24 h-24 object-contain rounded border border-gray-200 mb-2" />
+                                <img src={`/public${img.image_path}`} alt="img" className="w-24 h-24 object-contain rounded border border-gray-200 mb-2" />
                                 <label className="text-xs text-gray-500 mb-1">Couleur</label>
                                 <input type="color" value={img.color || '#cccccc'} onChange={e => handleEditImageColor(idx, e.target.value)} className="w-8 h-8 mb-1" />
                                 <label className="flex items-center gap-1 text-xs">
